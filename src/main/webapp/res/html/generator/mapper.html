@@ -1,0 +1,94 @@
+package org.grs.generator.mapper;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.jdbc.SQL;
+import org.grs.generator.model.{{gen.name | capitalize}};
+
+@Mapper
+//@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
+public interface {{gen.name | capitalize}}Mapper {
+    String Table = "{{gen.tableName || (gen.name | capitalize)}}";
+    String LIMIT = " LIMIT #{limit}";
+    String _OFFSET = " OFFSET #{offset}";
+    String LIMIT_OFFSET = LIMIT + _OFFSET;
+    String WHERE_ID = " WHERE id = #{id}";
+
+    String LIST_ = "SELECT * FROM ";
+    String DELETE_ = "DELETE FROM ";
+    String HAS_ = "SELECT COUNT(*) > 0 FROM ";
+
+    String LIST = LIST_ + Table;
+    String HAS = HAS_ + Table;
+
+    @Select(LIST + WHERE_ID)
+    {{gen.name | capitalize}} get(Serializable id);
+
+    @Delete(DELETE_ + Table + WHERE_ID)
+    Integer delete(Serializable id);
+
+    @Insert({
+        "insert into",
+        Table,
+        "(<span ng-repeat="column in columns | regex:'field':'^(?!id$|reply|createTime|update|valid)'">`{{column.field}}`{{!$last ? ',' : ''}}</span>)",
+        "values",
+        "(<span ng-repeat="column in columns | regex:'field':'^(?!id$|reply|createTime|update|valid)'">#<code>{</code>{{column.field}}}{{!$last ? ',' : ''}}</span>)"
+    })
+    int insert({{gen.name | capitalize}} record);
+
+    @UpdateProvider(type = {{gen.name | capitalize}}SqlProvider.class, method = "update")
+    int update({{gen.name | capitalize}} record);
+
+    /**
+     * 检查某列是否存在某值
+     *
+     * @param column 列名
+     * @param value  待检值
+     * @return 如果值存在, 则返回true; 否则返回false
+     */
+    @Select(HAS + " WHERE ${column} = #{value}")
+    @Options(useCache = false)
+    Boolean hasValueOnColumn(@Param("column") String column, @Param("value") String value);
+
+    @SelectProvider(type = {{gen.name | capitalize}}SqlProvider.class, method = "query")
+    List&lt;{{gen.name | capitalize}}&gt; query({{gen.name | capitalize}} record);
+
+    @SelectProvider(type = {{gen.name | capitalize}}SqlProvider.class, method = "count")
+    int count({{gen.name | capitalize}} record);
+
+    class {{gen.name | capitalize}}SqlProvider {
+        private String queryOrCount({{gen.name | capitalize}} record, boolean select) {
+            return new SQL() {
+                {
+                    SELECT(select ? "*" : "COUNT(*)");
+                    FROM(Table);
+                    //if (record.getName() != null) {
+                    //    WHERE("name like CONCAT('%',#{name},'%')");
+                    //}
+                }
+            }.toString() + (select && record.needPaging() ? LIMIT_OFFSET : "");
+        }
+
+        public String query({{gen.name | capitalize}} record) {
+            return queryOrCount(record, true);
+        }
+
+        public String count({{gen.name | capitalize}} record) {
+            return queryOrCount(record, false);
+        }
+
+        public String update(final {{gen.name | capitalize}} record) {
+            return new SQL() {
+                {
+                    UPDATE(Table);<div ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
+                    if (record.get{{column.field | capitalize}}() != null) {
+                        SET("`{{column.field}}` = #<code>{</code>{{column.field}},jdbcType={{column.jdbcType}}}");
+                    }</div>
+                    WHERE("id = #{id,jdbcType=INTEGER}");
+                }
+            }.toString();
+        }
+    }
+}

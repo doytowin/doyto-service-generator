@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html ng-app="GenApp">
+<head>
+	<base href="/">
+	<title>Static</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/4.6.3/css/font-awesome.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/res/css/app.css"/>
+
+	<script type="text/javascript" src="/webjars/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="/webjars/bootstrap/3.3.6/js/bootstrap.js"></script>
+	<script type="text/javascript" src="/webjars/angular/1.5.7/angular.js"></script>
+	<script src="/webjars/angular-ui-router/1.0.0-beta.1/release/angular-ui-router.min.js"></script>
+	<!--<script src="/res/lib/angular/ct-ui-router-extras.min.js"></script>-->
+	<script src="/webjars/angular-resource/1.5.7/angular-resource.min.js"></script>
+	<!--<script src="/webjars/angular-touch/1.5.7/angular-touch.min.js"></script>-->
+	<script>
+		var genApp = angular.module('GenApp', [
+			'ngResource',
+			'ui.router'
+			// 'ct.ui.router.extras.sticky'
+		]);
+		var Config = window.Config || {};
+		Config.models = [
+			{
+				url: "generator",
+				title: "自动生成",
+				sticky: true
+			},
+			{
+				url: "project",
+				title: "项目",
+				sticky: true
+			},
+			{
+				url: "module",
+				title: "模块",
+				sticky: true
+			},
+			{
+				url: "template",
+				title: "模板",
+				sticky: true
+			},
+			{
+				url: "column",
+				title: "模板",
+				sticky: true
+			}
+		];
+		Config.base = 'app';
+	</script>
+	<script src="/res/js/app.js"></script>
+	<style>
+		.bs-docs-nav {
+			background-color:#6f5499;
+			color:#cdbfe3;
+		}
+		.bs-docs-nav a {
+			color:#fff;
+		}
+		.bs-docs-nav .icon-bar {
+			background-color:#fff;
+		}
+		.bs-docs-nav .navbar-nav>.active>a, .bs-docs-nav .navbar-nav>.active>a:hover, .bs-docs-nav .navbar-nav>li>a:hover {
+			color: #463265;
+			background-color: #cdbfe3;
+		}
+		/*.bs-docs-nav .nav>li>a:focus, .nav>li>a:hover {*/
+			/*text-decoration: none;*/
+			/*background-color: #eee;*/
+		/*}*/
+	</style>
+</head>
+<body>
+<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+	<div class="container">
+		<div class="navbar-header">
+			<button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a ui-sref="app.generator" class="navbar-brand">自动生成</a>
+		</div>
+		<nav id="bs-navbar" class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+
+				<li ui-sref-active="active"><a ui-sref="app.project">项目</a></li>
+				<li ui-sref-active="active"><a ui-sref="app.module">模块</a></li>
+				<li ui-sref-active="active"><a ui-sref="app.template">模板</a></li>
+			</ul>
+			<!-- <ul class="nav navbar-nav navbar-right">
+				 <li><a href="http://themes.getbootstrap.com" onclick="ga('send','event','Navbar','Community links','Themes')">Themes</a>
+				 </li>
+				 <li><a href="http://expo.getbootstrap.com" onclick="ga('send','event','Navbar','Community links','Expo')">Expo</a>
+				 </li>
+				 <li><a href="http://blog.getbootstrap.com" onclick="ga('send','event','Navbar','Community links','Blog')">Blog</a>
+				 </li>
+			 </ul>-->
+		</nav>
+	</div>
+</header>
+<div class="container" ui-view></div>
+</body>
+</html>

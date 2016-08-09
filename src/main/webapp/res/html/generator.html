@@ -1,0 +1,97 @@
+<style>
+.nav-pills > li {
+padding:0 10px 10px 0;
+}
+</style>
+<div ng-controller="GeneratorCtrl">
+    <header style="margin:5px 0">
+	    <div class="clearfix">
+		    <ul class="nav nav-pills">
+			    <li>
+				    <div class="btn-group">
+					    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						    <span class="clip" style="min-width:94px;">{{projectName || '请选择项目'}}</span>
+						    <span class="caret"></span>
+					    </button>
+					    <ul class="dropdown-menu" style="max-height: 200px;overflow-y:scroll;">
+						    <li ng-repeat="project in projects">
+							    <a ng-click="switchProject(project)">{{project.name}}</a>
+						    </li>
+					    </ul>
+				    </div>
+			    </li>
+			    <li>
+				    <div class="btn-group">
+					    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						    <span class="clip" style="width:94px;">{{label || '请选择模块' }}</span>
+						    <span class="caret"></span>
+					    </button>
+					    <ul class="dropdown-menu" style="max-height: 200px;overflow-y:scroll;">
+						    <li ng-repeat="module in modules">
+							    <a ng-click="switchModule(module)">{{module.displayName}}</a>
+						    </li>
+					    </ul>
+				    </div>
+			    </li>
+			    <li>
+				    <button class="btn btn-default" ng-click="upload(gen.name)">上传选中</button>
+			    </li>
+			    <li>
+				    <button class="btn btn-default" ng-click="upload(gen.name, true)">上传全部</button>
+			    </li>
+		    </ul>
+	    </div>
+	    <hr>
+
+	    <ul class="nav-pills form-inline">
+		    <li class="form-group">
+			    <label class="control-label" style="width:60px" for=displayName>显示名</label>
+			    <input id=displayName class="form-control" type="text" ng-model="gen.displayName">
+		    </li>
+		    <li class="form-group">
+			    <label class="control-label" style="width:60px" for=name>变量名</label>
+			    <input id=name class="form-control" type="text" ng-model="gen.name">
+		    </li>
+		    <li class="form-group">
+			    <label class="control-label" style="width:60px" for=tableName>表名</label>
+			    <input id=tableName class="form-control" type="text" ng-model="gen.tableName">
+		    </li>
+		    <li>
+			    <label class="control-label" style="width:60px" >模块名</label>
+			    <div class="form-control">{{gen.name | capitalize}}</div>
+		    </li>
+		    <li>
+			    <button class="btn btn-primary" ng-click="save(gen)">保存</button>
+		    </li>
+	    </ul>
+
+        <!--<form class="form-horizontal clearfix">-->
+            <!--<div class="form-group">-->
+                <!--<div class="col-xs-offset-1 col-sm-offset-1 col-xs-8 col-sm-8">-->
+                    <!--<button class="btn btn-primary" ng-click="save(gen)">保存</button>-->
+                    <!--<button class="btn btn-danger" ng-click="remove(gen)">删除</button>-->
+                    <!--<button class="btn btn-success pull-right" ng-click="add(gen)">添加</button>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</form>-->
+    </header>
+    <div ng-if="templates">
+        <!-- Nav tabs -->
+        <div class="nav-inline">
+            <ul class="nav nav-tabs" role="tablist" style="">
+                <li role="presentation" class="{{$first ? 'active' : ''}}" style="" ng-repeat="template in templates">
+                    <input type="checkbox" ng-model="template.upload" style="position:relative;left:3px;bottom:-30px;z-index:999">
+                    <a data-target="#template-{{template.id}}" role="tab" data-toggle="tab"> {{template.cap ? (gen.name | capitalize) : gen.name}}{{template.suffix}}</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div id="template-{{template.id}}" role="tabpanel" class="tab-pane{{$first ? ' active' : ''}}" ng-repeat="template in templates">
+                <pre gz-bind-template="template.content"></pre>
+                <!--<pre ng-include="res(template.dom)"></pre>-->
+            </div>
+        </div>
+    </div>
+</div>

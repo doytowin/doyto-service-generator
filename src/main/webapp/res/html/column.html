@@ -1,0 +1,261 @@
+<div ng-controller="ColumnCtrl">
+    <header style="margin:5px">
+        <form class="form-inline">
+            <label style="margin-left:5px">
+                <input class="form-control" type="text" placeholder="请输入表字段名称" ng-model="crud.p.q.name" ng-keyup="crud.p.load(true)">
+            </label>
+            <button class="btn btn-default" ng-click="crud.p.reset()">重置</button>
+            <button class="btn btn-success pull-right" data-toggle="modal" data-target="#columnAddModal" ng-click="crud.add()">添加表字段</button>
+        </form>
+    </header>
+    <section class="table-responsive" style="overflow-y:auto">
+        <table class="table table-hover" style="margin-bottom:0">
+            <thead>
+            <tr>
+                <th></th>
+                <th>tableName</th>
+                <th>field</th>
+                <th>label</th>
+                <th>type</th>
+                <th>nullable</th>
+                <th>key</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="r in crud.p.result">
+                <td>{{$index+1}}</td>
+                <td>{{r.tableName}}</td>
+                <td>{{r.field}}</td>
+                <td>{{r.label}}</td>
+                <td>{{r.type}}</td>
+                <td>{{r.nullable}}</td>
+                <td>{{r.key}}</td>
+                <td>
+                    <a ng-click="crud.view(r)" data-toggle="modal" data-target="#columnViewModal">查看</a>
+                    <a ng-click="crud.edit(r)" data-toggle="modal" data-target="#columnEditModal">修改</a>
+                    <a ng-click="crud.remove(r)">删除</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+    <footer>
+        <div class="flow page-ul dropup">
+            <div class="btn-group">
+                <button class="btn btn-default" ng-click="crud.p.first();"><i class="fa fa-step-backward"></i></button>
+                <button class="btn btn-default" ng-click="crud.p.prev();"><i class="fa fa-backward"></i></button>
+                <div class="btn-group">
+                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        {{crud.p.page}} / {{crud.p.pages}} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" style="max-height: 200px;overflow-y:scroll;">
+                        <li ng-repeat="_ in ((_ = []) && (_.length=(crud.p.pages||0)) && _) track by $index">
+                            <a ng-click="crud.p.goto($index+1)">{{$index+1}} / {{crud.p.pages}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <button class="btn btn-default" ng-click="crud.p.next();"><i class="fa fa-forward"></i></button>
+                <button class="btn btn-default" ng-click="crud.p.last();"><i class="fa fa-step-forward"></i></button>
+                <button class="btn btn-default" ng-click="crud.p.load();"><i class="fa fa-refresh"></i></button>
+            </div>
+            <div class="pull-right">
+                <span class="hidden-xs">共有{{crud.p.total}}条数据，显示第{{crud.p.from}}条到第{{crud.p.to}}条，每页</span>
+                <div class="btn-group">
+                    <button class="btn btn-default dropdown-toggle" style="min-width:55px" data-toggle="dropdown">
+                        {{crud.p.limit}} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu pull-right">
+                        <li ng-repeat="s in [5,10,20,30,50]" style="min-width:55px"><a ng-click="crud.p.size(s)">{{s}}</a></li>
+                    </ul>
+                </div>
+                条
+            </div>
+        </div>
+    </footer>
+    <div id="columnAddModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">添加表字段</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="columnAddForm" class="form-horizontal" autocomplete="off" novalidate>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="add-tableName">tableName</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="add-tableName" name="tableName" class="form-control" type="text" ng-model="crud.record.tableName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="add-field">field</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="add-field" name="field" class="form-control" type="text" ng-model="crud.record.field" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="add-fieldName">label</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="add-fieldName" name="fieldName" class="form-control" type="text" ng-model="crud.record.label" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="add-type">type</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="add-type" name="type" class="form-control" type="text" ng-model="crud.record.type" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="add-nullable">nullable</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="add-nullable" name="nullable" class="form-control" type="text" ng-model="crud.record.nullable" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="add-key">key</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="add-key" name="key" class="form-control" type="text" ng-model="crud.record.key" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" ng-click="crud.save(crud.record)">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="columnEditModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">修改表字段</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="columnEditForm" class="form-horizontal" autocomplete="off" novalidate>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="edit-tableName">tableName</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="edit-tableName" name="tableName" class="form-control" type="text" ng-model="crud.record.tableName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="edit-field">field</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="edit-field" name="field" class="form-control" type="text" ng-model="crud.record.field" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="edit-fieldName">label</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="edit-fieldName" name="fieldName" class="form-control" type="text" ng-model="crud.record.label" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="edit-type">type</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="edit-type" name="type" class="form-control" type="text" ng-model="crud.record.type" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="edit-nullable">nullable</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="edit-nullable" name="nullable" class="form-control" type="text" ng-model="crud.record.nullable" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4" for="edit-key">key</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <input id="edit-key" name="key" class="form-control" type="text" ng-model="crud.record.key" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" ng-click="crud.save(crud.record)">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="columnViewModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">查看表字段</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">tableName</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.tableName}}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">field</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.field}}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">label</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.label}}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">type</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.type}}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">nullable</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.nullable}}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">key</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.key}}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">创建时间</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.createTime}}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">创建人</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.createUserId}}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">修改时间</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.updateTime}}</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-xs-3 col-sm-4">修改人</label>
+                            <div class="col-xs-9 col-sm-5">
+                                <div class="form-control">{{crud.record.updateUserId}}</div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

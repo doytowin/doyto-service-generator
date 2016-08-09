@@ -1,0 +1,38 @@
+/*========== class ============*/
+label.gz-radio {
+    width:100%;
+    cursor:pointer;
+    font-weight:normal;
+    margin-bottom:0;
+}
+label.gz-radio:hover {
+    font-weight:bold;
+}
+
+.ellipsis, .clip {
+    white-space: nowrap;
+    word-wrap: normal;
+    overflow: hidden;
+    -o-text-overflow: ellipsis; /* Opera 9-10.6 */
+    text-overflow: ellipsis;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: top;
+    max-width: 100%;
+    _width: 100%;
+    text-align: left; /* Chrome 21+ bug */
+}
+.clip {
+    text-overflow: clip;
+}
+
+.tab-content pre {
+    border:1px solid #ddd;
+    border-top:none;
+    -moz-border-radius-topleft:0;
+    -moz-border-radius-topright:0;
+    border-top-left-radius:0;
+    border-top-right-radius:0;
+}
+/*========== class ============*/
