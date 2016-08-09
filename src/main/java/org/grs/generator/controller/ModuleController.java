@@ -45,7 +45,7 @@ public class ModuleController {
     private ProjectMapper projectMapper;
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseObject query(Module module){
+    public ResponseObject query(Module module) {
         ResponseObject ret = new ResponseObject();
         List moduleList = moduleMapper.query(module);
         long count = moduleMapper.count(module);
@@ -67,6 +67,20 @@ public class ModuleController {
             ret.setMessage("项目[" + module.getProjectId() + "]不存在!");
             return ret;
         }
+
+        String sql = module.getCreateSql();
+        if (sql != null) {
+            try {
+                databaseMapper.createTable(sql);
+            } catch (Exception e) {
+                ret.setMessage("建表出错:" + e.getMessage());
+                return ret;
+            }
+        } else {
+            ret.setMessage("建表sql不能为空");
+            return ret;
+        }
+
         //module.setCreateUserId(AppContext.getLoginUserId());
         moduleMapper.insert(module);
 
@@ -173,7 +187,7 @@ public class ModuleController {
     public ResponseObject tableColumn(@PathVariable("table") String table) {
         ResponseObject ret = new ResponseObject();
         try {
-            List list  = databaseMapper.listColumns(table);
+            List list = databaseMapper.listColumns(table);
             ret.setResult(list);
         } catch (Exception e) {
             ret.setMessage("表[" + table + "]不存在");

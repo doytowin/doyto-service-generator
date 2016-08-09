@@ -10,6 +10,7 @@ package org.grs.generator.common;
 public class ResponseObject {
     private Boolean success = true;
     private String message;
+    private String info;
     private String code = "0000";
     private Object result;
     private Long total;

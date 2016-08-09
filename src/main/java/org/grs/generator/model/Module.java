@@ -25,7 +25,12 @@ public class Module extends PageableModel<Module> {
 
     private Date createTime;
 
+    //表单字段
+    private String createSql;
+
+    //返回字段
     private Project project;
 
     private List<Column> columns;
+
 }
