@@ -2,7 +2,7 @@ package org.grs.generator.common;
 
 import java.io.Serializable;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 
 /**
  * Class AbstractModel ...
@@ -32,6 +32,6 @@ public abstract class CommonModel<T extends CommonModel<?>> implements Cloneable
 
     @Override
     public String toString() {
-        return JSONObject.toJSONString(this);
+        return JSON.toJSONString(this);
     }
 }

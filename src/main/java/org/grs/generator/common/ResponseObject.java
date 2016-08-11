@@ -1,5 +1,7 @@
 package org.grs.generator.common;
 
+import com.alibaba.fastjson.JSON;
+
 /**
  * 返回给移动客户端的JSON对象的结构
  *
@@ -34,4 +36,8 @@ public class ResponseObject {
         return success && (message == null || message.length() == 0);
     }
 
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
 }
