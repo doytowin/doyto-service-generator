@@ -21,4 +21,7 @@ public interface DatabaseMapper {
 
     @Update("${sql}")
     void createTable(@Param("sql") String sql);
+
+    @Select("DROP TABLE IF EXISTS ${table}")
+    void dropTable(@Param("table") String table);
 }

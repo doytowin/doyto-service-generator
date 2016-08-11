@@ -90,6 +90,9 @@ public interface ColumnMapper {
     @SelectProvider(type = ColumnSqlProvider.class, method = "count")
     int count(Column record);
 
+    @Delete(DELETE_ + Table + " WHERE tableName = #{tableName}")
+    void deleteByTableName(String tableName);
+
     class ColumnSqlProvider {
         private String queryOrCount(Column record, boolean select) {
             return new SQL() {

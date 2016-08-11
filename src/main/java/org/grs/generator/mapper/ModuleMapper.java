@@ -32,16 +32,19 @@ public interface ModuleMapper {
 
     @Select(LIST + WHERE_ID)
     @Results(value = {
+            @Result(column = "projectId", property = "projectId"),
             @Result(
                     column = "projectId", property = "project", javaType = Project.class,
                     one = @One(select = "org.grs.generator.mapper.ProjectMapper.get")
             ),
+            @Result(column = "tableName", property = "tableName"),
             @Result(
                     column = "tableName", property = "columns", javaType = List.class,
                     many = @Many(select = "org.grs.generator.mapper.ColumnMapper.getByTableName")
             )
     })
     Module get(Serializable id);
+    //Module getWithProjectAndColumns(Serializable id);
 
     @Delete(DELETE_ + Table + WHERE_ID)
     Integer delete(Serializable id);
@@ -102,7 +105,9 @@ public interface ModuleMapper {
                     if (record.getProjectId() != null) {
                         WHERE("projectId = #{projectId}");
                     }
-                    ORDER_BY("t.id desc");
+                    if (select) {
+                        ORDER_BY("t.id desc");
+                    }
                 }
             }.toString() + (select && record.needPaging() ? LIMIT_OFFSET : "");
         }

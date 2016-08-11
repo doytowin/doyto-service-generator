@@ -1,6 +1,7 @@
 package org.grs.generator.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.annotation.Resource;
@@ -119,12 +120,12 @@ public class ModuleController {
         target.setDisplayName(module.getDisplayName());
         target.setModelName(module.getModelName());
         target.setFullName(module.getFullName());
-        target.setTableName(module.getTableName());
+        //target.setTableName(module.getTableName());
 
         //target.setUpdateUserId(AppContext.getLoginUserId());
         //target.setUpdateTime(new Date());
         moduleMapper.update(target);
-        ret.setResult(target);
+        //ret.setResult(target);
         return ret;
     }
 
@@ -141,6 +142,7 @@ public class ModuleController {
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    @Transactional
     public ResponseObject delete(@PathVariable("id") Integer id) {
         ResponseObject ret = new ResponseObject();
         Module target = moduleMapper.get(id);
@@ -148,8 +150,10 @@ public class ModuleController {
             ret.setMessage("指定记录不存在");
             return ret;
         }
+        columnMapper.deleteByTableName(target.getTableName());
         moduleMapper.delete(id);
-        ret.setResult(target);
+        databaseMapper.dropTable(target.getTableName());
+        //ret.setResult(target);
         return ret;
     }
 
@@ -167,15 +171,13 @@ public class ModuleController {
         File dir = new File(rootPath);
         for (int i = 0, len = jsonArray.size(); i < len; i++) {
             JSONObject data = jsonArray.getJSONObject(i);
+            File file = new File(rootPath + File.separator + data.getString("path"));
             try {
-                File file = new File(rootPath + File.separator + data.getString("path"));
                 FileUtils.write(file, data.getString("text"), StandardCharsets.UTF_8);
-            } catch (Exception e) {
+                run.exec("git -c core.quotepath=false add -- " + data.getString("path"), null, dir);
+            } catch (IOException e) {
                 log.error("文件写入失败", e);
                 ret.setMessage("文件写入失败:" + e.getMessage());
-            }
-            try {
-                run.exec("git -c core.quotepath=false add -- " + data.getString("path"), null, dir);
             } catch (Exception e) {
                 log.error("git添加失败", e);
             }
