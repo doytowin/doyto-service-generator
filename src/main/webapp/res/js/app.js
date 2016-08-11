@@ -67,17 +67,28 @@ controller('ModuleCtrl', ['$scope','Project','Module','Column',
             if (/^create\s+table\s+(\w+)\s?/gi.test(record.createSql)) {
 
                 record.tableName = RegExp.$1;
-                var $1 = RegExp.$1.toLowerCase();
+                var $1 = Util.camelize(RegExp.$1);
                 record.name = $1;
-                record.modelName = Util.capitalize($1);
-                record.varName = $1;
-                record.fullName = $1;
-                record.displayName = $1;
+                var $2 = Util.capitalize($1);
+                record.modelName = $2;
+                record.fullName = $2;
+                record.displayName = $2;
 
                 $scope.sqlResolved = true;
             } else {
                 alert('sql格式错误!');
             }
+        };
+
+        $scope.editLabels = function(record) {
+            Column.query({tableName:record.tableName}, function (data) {
+                if (data.success) {
+                    record.columns = data.result;
+                    $scope.crud.record = record;
+                } else {
+                    Util.handleFailure(data);
+                }
+            });
         };
 
         $scope.saveLabels = function(columns) {
@@ -383,7 +394,15 @@ Util.escapeHTML = function(text) {
 };
 
 Util.capitalize = function (s) {
-    return typeof s === 'string' ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+    return typeof s !== 'string' ? s : s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+Util.camelize = function(s) {
+    return typeof s !== 'string' ? s :
+        s.replace(/^([A-Z])|[\s\-_](\w)/g, function (match, p1, p2, offset) {
+            if (p2) return p2.toUpperCase();
+            return p1.toLowerCase();
+        });
 };
 
 Util.handleFailure = function (data) {

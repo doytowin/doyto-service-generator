@@ -54,7 +54,15 @@ Util.escapeHTML = function(text) {
 };
 
 Util.capitalize = function (s) {
-    return typeof s === 'string' ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+    return typeof s !== 'string' ? s : s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+Util.camelize = function(s) {
+    return typeof s !== 'string' ? s :
+        s.replace(/^([A-Z])|[\s\-_](\w)/g, function (match, p1, p2, offset) {
+            if (p2) return p2.toUpperCase();
+            return p1.toLowerCase();
+        });
 };
 
 Util.handleFailure = function (data) {

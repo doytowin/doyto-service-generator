@@ -31,6 +31,9 @@ public interface ModuleMapper {
     String HAS = HAS_ + Table;
 
     @Select(LIST + WHERE_ID)
+    Module get(Serializable id);
+
+    @Select(LIST + WHERE_ID)
     @Results(value = {
             @Result(column = "projectId", property = "projectId"),
             @Result(
@@ -43,8 +46,8 @@ public interface ModuleMapper {
                     many = @Many(select = "org.grs.generator.mapper.ColumnMapper.getByTableName")
             )
     })
-    Module get(Serializable id);
-    //Module getWithProjectAndColumns(Serializable id);
+    @Options(useCache = false)
+    Module getWithProjectAndColumns(Serializable id);
 
     @Delete(DELETE_ + Table + WHERE_ID)
     Integer delete(Serializable id);
@@ -78,11 +81,6 @@ public interface ModuleMapper {
             @Result(
                     column = "projectId", property = "project", javaType = Project.class,
                     one = @One(select = "org.grs.generator.mapper.ProjectMapper.get")
-            ),
-            @Result(column = "tableName", property = "tableName"),
-            @Result(
-                    column = "tableName", property = "columns", javaType = List.class,
-                    many = @Many(select = "org.grs.generator.mapper.ColumnMapper.getByTableName")
             )
     })
     List<Module> query(Module record);

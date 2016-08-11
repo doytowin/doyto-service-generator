@@ -20,6 +20,7 @@ import org.grs.generator.mapper.ProjectMapper;
 import org.grs.generator.model.Column;
 import org.grs.generator.model.Module;
 import org.grs.generator.model.Project;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -73,6 +74,9 @@ public class ModuleController {
         if (sql != null) {
             try {
                 databaseMapper.createTable(sql);
+            } catch (BadSqlGrammarException e) {
+                ret.setMessage("建表出错:" + e.getCause().getMessage());
+                return ret;
             } catch (Exception e) {
                 ret.setMessage("建表出错:" + e.getMessage());
                 return ret;
@@ -132,7 +136,7 @@ public class ModuleController {
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public ResponseObject get(@PathVariable("id") Integer id) {
         ResponseObject ret = new ResponseObject();
-        Module target = moduleMapper.get(id);
+        Module target = moduleMapper.getWithProjectAndColumns(id);
         if (target == null) {
             ret.setMessage("指定记录不存在");
             return ret;

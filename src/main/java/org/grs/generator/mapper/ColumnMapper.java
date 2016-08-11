@@ -99,9 +99,9 @@ public interface ColumnMapper {
                 {
                     SELECT(select ? "*" : "COUNT(*)");
                     FROM(Table);
-                    //if (record.getName() != null) {
-                    //    WHERE("name like CONCAT('%',#{name},'%')");
-                    //}
+                    if (record.getTableName() != null) {
+                        WHERE("tableName = #{tableName}");
+                    }
                 }
             }.toString() + (select && record.needPaging() ? LIMIT_OFFSET : "");
         }

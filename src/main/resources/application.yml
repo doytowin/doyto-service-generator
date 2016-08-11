@@ -38,3 +38,9 @@ mybatis:
     useGeneratedKeys: true
 #    lazyLoadTriggerMethods: none
 
+---
+spring:
+  profiles: run
+server:
+  port: 8088
+

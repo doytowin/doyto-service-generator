@@ -47,7 +47,7 @@
                 <td>
                     <a ng-click="crud.view(r)" data-toggle="modal" data-target="#moduleViewModal">查看</a>
                     <a ng-click="crud.edit(r)" data-toggle="modal" data-target="#moduleEditModal">修改</a>
-	                <a ng-click="crud.edit(r)" data-toggle="modal" data-target="#columnModal">修改字段</a>
+	                <a ng-click="editLabels(r)" data-toggle="modal" data-target="#columnModal">修改字段</a>
                     <a ng-click="crud.remove(r)">删除</a>
                 </td>
             </tr>
@@ -278,7 +278,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                    <h4 class="modal-title">查看模块</h4>
+                    <h4 class="modal-title">编辑‘{{crud.record.displayName}}’的字段</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form-horizontal">
