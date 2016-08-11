@@ -8,7 +8,7 @@ import org.apache.ibatis.jdbc.SQL;
 import org.grs.generator.model.Column;
 
 @Mapper
-//@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
+@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ColumnMapper {
     String Table = "GEN_Column";
     String LIMIT = " LIMIT #{limit}";

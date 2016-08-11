@@ -9,7 +9,7 @@ import org.grs.generator.model.Module;
 import org.grs.generator.model.Project;
 
 @Mapper
-//@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
+@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ModuleMapper {
     String Table = "GEN_Module";
     String ASC = " ORDER BY id ASC";

@@ -8,7 +8,7 @@ import org.apache.ibatis.jdbc.SQL;
 import org.grs.generator.model.Project;
 
 @Mapper
-//@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
+@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ProjectMapper {
     String Table = "GEN_Project";
     String LIMIT = " LIMIT #{limit}";
