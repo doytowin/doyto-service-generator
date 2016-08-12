@@ -59,9 +59,8 @@ Util.capitalize = function (s) {
 
 Util.camelize = function(s) {
     return typeof s !== 'string' ? s :
-        s.replace(/^([A-Z])|[\s\-_](\w)/g, function (match, p1, p2, offset) {
-            if (p2) return p2.toUpperCase();
-            return p1.toLowerCase();
+        s.replace(/^([A-Z])|[\s\-_](\w)/g, function (match, p1, p2) {
+            return p2 ? p2.toUpperCase() : p1.toLowerCase();
         });
 };
 
