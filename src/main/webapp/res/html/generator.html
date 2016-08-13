@@ -13,7 +13,7 @@ padding:0 10px 10px 0;
 						    <span class="clip" style="min-width:94px;">{{projectName || '请选择项目'}}</span>
 						    <span class="caret"></span>
 					    </button>
-					    <ul class="dropdown-menu" style="max-height: 200px;overflow-y:scroll;">
+					    <ul class="dropdown-menu dropdown-menu-sm">
 						    <li ng-repeat="project in projects">
 							    <a ng-click="switchProject(project)">{{project.name}}</a>
 						    </li>
@@ -26,7 +26,7 @@ padding:0 10px 10px 0;
 						    <span class="clip" style="width:94px;">{{label || '请选择模块' }}</span>
 						    <span class="caret"></span>
 					    </button>
-					    <ul class="dropdown-menu" style="max-height: 200px;overflow-y:scroll;">
+					    <ul class="dropdown-menu dropdown-menu-sm">
 						    <li ng-repeat="module in modules">
 							    <a ng-click="switchModule(module)">{{module.displayName}}</a>
 						    </li>

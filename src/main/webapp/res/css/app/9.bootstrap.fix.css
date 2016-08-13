@@ -126,6 +126,10 @@ a[role="tab"] {
 .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
     background-color:#f5f5f5;
 }
+.dropdown-menu.dropdown-menu-sm {
+    max-height:200px;
+    overflow-y:auto;
+}
 
 /* ===============nav-inline============= */
 .nav-inline {

@@ -6,7 +6,7 @@
 			        <span class="clip" style="width:94px;">{{crud.project.name || ' - 请选择项目 - '}}</span>
 			        <span class="caret"></span>
 		        </button>
-		        <ul class="dropdown-menu" style="max-height: 200px;overflow-y:scroll;">
+		        <ul class="dropdown-menu dropdown-menu-sm">
 			        <li><a ng-click="crud.p.q.projectId=undefined; crud.project=undefined; crud.p.load(true)"> - 请选择项目 - </a></li>
 			        <li ng-repeat="p in projects">
 				        <a ng-click="crud.p.q.projectId=p.id; crud.project=p; crud.p.load(true)">{{p.name}}</a>
@@ -25,7 +25,7 @@
         <table class="table table-hover" style="margin-bottom:0">
             <thead>
             <tr>
-                <th></th>
+                <th>#</th>
                 <th>所属项目</th>
                 <th>变量名</th>
                 <th>显示名</th>
@@ -63,7 +63,7 @@
                     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                         {{crud.p.page}} / {{crud.p.pages}} <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" style="max-height: 200px;overflow-y:scroll;">
+                    <ul class="dropdown-menu dropdown-menu-sm">
                         <li ng-repeat="_ in ((_ = []) && (_.length=(crud.p.pages||0)) && _) track by $index">
                             <a ng-click="crud.p.goto($index+1)">{{$index+1}} / {{crud.p.pages}}</a>
                         </li>

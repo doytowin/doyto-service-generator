@@ -85,10 +85,10 @@ public interface {{gen.modelName}}Mapper {
 
         public String update(final {{gen.modelName}} record) {
             return new SQL() <code ng-non-bindable>{{</code>
-                UPDATE(Table);<div ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
+                UPDATE(Table);<ng-repeat ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
                 if (record.get{{column.field | capitalize}}() != null) {
                     SET("`{{column.field}}` = #<code>{</code>{{column.field}},jdbcType={{column.jdbcType}}}");
-                }</div>
+                }</ng-repeat>
                 WHERE("id = #{id,jdbcType=INTEGER}");
             }}.toString();
         }

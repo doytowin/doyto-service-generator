@@ -42,7 +42,7 @@
 					<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 						{{crud.p.page}} / {{crud.p.pages}} <span class="caret"></span>
 					</button>
-					<ul class="dropdown-menu" style="max-height: 200px;overflow-y:scroll;">
+					<ul class="dropdown-menu dropdown-menu-sm">
 						<li ng-repeat="_ in ((_ = []) && (_.length=(crud.p.pages||0)) && _) track by $index">
 							<a ng-click="crud.p.goto($index+1)">{{$index+1}} / {{crud.p.pages}}</a>
 						</li>
