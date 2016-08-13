@@ -1,5 +1,7 @@
 package org.grs.generator.common;
 
+import java.io.Serializable;
+
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -9,7 +11,7 @@ import com.alibaba.fastjson.JSON;
  */
 @lombok.Getter
 @lombok.Setter
-public class ResponseObject {
+public class ResponseObject implements Serializable {
     private Boolean success = true;
     private String message;
     private String info;
