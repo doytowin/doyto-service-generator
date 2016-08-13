@@ -28,26 +28,6 @@ public interface ColumnMapper {
     @Delete(DELETE + " WHERE tableName = #{tableName}")
     void deleteByTableName(String tableName);
 
-    /*==========EXTRA==========*/
-
-    @Select(LIST + _WHERE_ID)
-    Column get(Serializable id);
-
-    @Delete(DELETE + _WHERE_ID)
-    Integer delete(Serializable id);
-
-    @Insert({
-        "insert into",
-        Table,
-        "(`tableName`,`field`,`label`,`type`,`nullable`,`key`)",
-        "values",
-        "(#{tableName},#{field},#{label},#{type},#{nullable},#{key})"
-    })
-    int insert(Column record);
-
-    @UpdateProvider(type = ColumnSqlProvider.class, method = "update")
-    int update(Column record);
-
     @Update(value = {
             "<script>",
             "<foreach collection='list' item='col' separator=';'>",
@@ -76,6 +56,26 @@ public interface ColumnMapper {
     })
     @Options(useGeneratedKeys = true)
     int saveColumns(@Param("list") List<Column> list);
+
+    /*==========EXTRA==========*/
+
+    @Select(LIST + _WHERE_ID)
+    Column get(Serializable id);
+
+    @Delete(DELETE + _WHERE_ID)
+    Integer delete(Serializable id);
+
+    @Insert({
+        "insert into",
+        Table,
+        "(`tableName`,`field`,`label`,`type`,`nullable`,`key`)",
+        "values",
+        "(#{tableName},#{field},#{label},#{type},#{nullable},#{key})"
+    })
+    int insert(Column record);
+
+    @UpdateProvider(type = ColumnSqlProvider.class, method = "update")
+    int update(Column record);
 
     /**
      * 检查某列是否存在某值
