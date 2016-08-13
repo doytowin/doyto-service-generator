@@ -20,8 +20,7 @@ public interface ColumnMapper {
     String _LIMIT_OFFSET = _LIMIT + _OFFSET;
     String _WHERE_ID = " WHERE id = #{id}";
 
-    /*==========EXTRA==========*/
-
+    /* ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
     @Select(LIST + " WHERE tableName = #{tableName}")
     List<Column> getByTableName(String tableName);
 
@@ -56,8 +55,7 @@ public interface ColumnMapper {
     })
     @Options(useGeneratedKeys = true)
     int saveColumns(@Param("list") List<Column> list);
-
-    /*==========EXTRA==========*/
+    /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
     @Select(LIST + _WHERE_ID)
     Column get(Serializable id);
@@ -66,11 +64,11 @@ public interface ColumnMapper {
     Integer delete(Serializable id);
 
     @Insert({
-        "insert into",
-        Table,
-        "(`tableName`,`field`,`label`,`type`,`nullable`,`key`)",
-        "values",
-        "(#{tableName},#{field},#{label},#{type},#{nullable},#{key})"
+            "insert into",
+            Table,
+            "(`tableName`,`field`,`label`,`type`,`nullable`,`key`)",
+            "values",
+            "(#{tableName},#{field},#{label},#{type},#{nullable},#{key})"
     })
     int insert(Column record);
 
@@ -96,15 +94,13 @@ public interface ColumnMapper {
 
     class ColumnSqlProvider {
         private String queryOrCount(Column record, boolean query) {
-            return new SQL() {
-                {
-                    SELECT(query ? "*" : "COUNT(*)");
-                    FROM(Table);
-                    if (record.getTableName() != null) {
-                        WHERE("tableName = #{tableName}");
-                    }
+            return new SQL() {{
+                SELECT(query ? "*" : "COUNT(*)");
+                FROM(Table);
+                if (record.getTableName() != null) {
+                    WHERE("tableName = #{tableName}");
                 }
-            }.toString() + (query && record.needPaging() ? _LIMIT_OFFSET : "");
+            }}.toString() + (query && record.needPaging() ? _LIMIT_OFFSET : "");
         }
 
         public String query(Column record) {
@@ -116,30 +112,28 @@ public interface ColumnMapper {
         }
 
         public String update(final Column record) {
-            return new SQL() {
-                {
-                    UPDATE(Table);
-                    if (record.getTableName() != null) {
-                        SET("`tableName` = #{tableName,jdbcType=VARCHAR}");
-                    }
-                    if (record.getField() != null) {
-                        SET("`field` = #{field,jdbcType=VARCHAR}");
-                    }
-                    if (record.getLabel() != null) {
-                        SET("`label` = #{label,jdbcType=VARCHAR}");
-                    }
-                    if (record.getType() != null) {
-                        SET("`type` = #{type,jdbcType=VARCHAR}");
-                    }
-                    if (record.getNullable() != null) {
-                        SET("`nullable` = #{nullable,jdbcType=BIT}");
-                    }
-                    if (record.getKey() != null) {
-                        SET("`key` = #{key,jdbcType=VARCHAR}");
-                    }
-                    WHERE("id = #{id,jdbcType=INTEGER}");
+            return new SQL() {{
+                UPDATE(Table);
+                if (record.getTableName() != null) {
+                    SET("`tableName` = #{tableName,jdbcType=VARCHAR}");
                 }
-            }.toString();
+                if (record.getField() != null) {
+                    SET("`field` = #{field,jdbcType=VARCHAR}");
+                }
+                if (record.getLabel() != null) {
+                    SET("`label` = #{label,jdbcType=VARCHAR}");
+                }
+                if (record.getType() != null) {
+                    SET("`type` = #{type,jdbcType=VARCHAR}");
+                }
+                if (record.getNullable() != null) {
+                    SET("`nullable` = #{nullable,jdbcType=BIT}");
+                }
+                if (record.getKey() != null) {
+                    SET("`key` = #{key,jdbcType=VARCHAR}");
+                }
+                WHERE("id = #{id,jdbcType=INTEGER}");
+            }}.toString();
         }
     }
 }
