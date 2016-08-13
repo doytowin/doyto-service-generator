@@ -1,16 +1,5 @@
 'use strict';
 
-/* App Module */
-/* exported genApp */
-//
-// var genApp = angular.module('GenApp', [
-//     'ngResource',
-//     'ui.router'
-//     // 'ct.ui.router.extras.sticky'
-// ]);
-
-'use strict';
-
 /*global genApp, Crud, Util*/
 
 genApp.
@@ -634,39 +623,43 @@ controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
 
         $scope.switchModule = function (record) {
             record = record || {};
-            // Module.table({table: record.tableName || record.name}, function (data) {
-                $scope.gen = angular.copy(record);
-                $scope.label = record.displayName;
-                // if (data.success) {
-                //     var columns = data.result, imports = [];
-                    var columns = record.columns, imports = [];
-                    for (var i = 0; i < columns.length; i++) {
-                        var column = columns[i];
-                        if (/^(var|text)/.test(column.type)) {
-                            column.type = 'String';
-                            column.jdbcType = 'VARCHAR';
-                        } else if (column.type.startsWith('int')) {
-                            column.type = 'Integer';
-                            column.jdbcType = 'INTEGER';
-                        } else if (column.type.startsWith('smallint')) {
-                            column.type = 'Short';
-                            column.jdbcType = 'INTEGER';
-                        } else if (column.type.startsWith('tinyint')) {
-                            column.type = 'Boolean';
-                            column.jdbcType = 'BIT';
-                        } else if (column.type.startsWith('timestamp') || column.type.startsWith('datetime')) {
-                            column.type = 'Date';
-                            column.jdbcType = 'TIMESTAMP';
-                            imports.indexOf('java.util.Date') < 0 && imports.push('java.util.Date');
-                        } else {
-                            column.type = 'String';
-                            column.jdbcType = 'VARCHAR';
+            $scope.gen = angular.copy(record);
+            $scope.label = record.displayName;
+            if (record.columns) {
+                $scope.columns = record.columns;
+                $scope.imports = record.imports;
+            } else {
+                Module.table({table: record.tableName || record.name}, function (data) {
+                    if (data.success) {
+                        var columns = data.result, imports = [];
+                        for (var i = 0; i < columns.length; i++) {
+                            var column = columns[i];
+                            if (/^(var|text)/.test(column.type)) {
+                                column.type = 'String';
+                                column.jdbcType = 'VARCHAR';
+                            } else if (column.type.startsWith('int')) {
+                                column.type = 'Integer';
+                                column.jdbcType = 'INTEGER';
+                            } else if (column.type.startsWith('smallint')) {
+                                column.type = 'Short';
+                                column.jdbcType = 'INTEGER';
+                            } else if (column.type.startsWith('tinyint')) {
+                                column.type = 'Boolean';
+                                column.jdbcType = 'BIT';
+                            } else if (column.type.startsWith('timestamp') || column.type.startsWith('datetime')) {
+                                column.type = 'Date';
+                                column.jdbcType = 'TIMESTAMP';
+                                imports.indexOf('java.util.Date') < 0 && imports.push('java.util.Date');
+                            } else {
+                                column.type = 'String';
+                                column.jdbcType = 'VARCHAR';
+                            }
                         }
+                        $scope.columns = record.columns = columns;
+                        $scope.imports = record.imports = imports;
                     }
-                    $scope.columns = columns;
-                    $scope.imports = imports;
-                // }
-            // });
+                });
+            }
         };
 
         $scope.add = function (gen) {

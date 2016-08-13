@@ -189,6 +189,12 @@ public class ModuleController {
         return ret;
     }
 
+    /**
+     * 按表名取表列
+     *
+     * @param table 表名
+     * @return 表列
+     */
     @RequestMapping(value = "table/{table}", method = RequestMethod.GET)
     public ResponseObject tableColumn(@PathVariable("table") String table) {
         ResponseObject ret = new ResponseObject();
