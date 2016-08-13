@@ -147,7 +147,7 @@
 <script type="text/javascript">
 	var $e = angular.element(document.getElementById('template'));
 	var p = Util.escapeHTML($e.html().trim().replace(/=""/g, ''))
-			.replace(/{\\/g, '<code ng-non-bindable">{{</code>')
+			.replace(/{\\/g, '<code ng-non-bindable>{{</code>')
 			.replace(/&lt;!--REPEAT_START--&gt;/g, '<ng-repeat ng-repeat="column in columns | regex:\'field\':\'^(?!id$|create|update|valid$)\'">')
 			.replace(/&lt;!--REPEAT_END--&gt;/g, '</ng-repeat>');
 	$e.parent().html(p);
