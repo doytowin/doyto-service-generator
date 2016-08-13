@@ -28,6 +28,8 @@ spring:
       FAIL_ON_EMPTY_BEANS: false
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  hazelcast:
+    config: hazelcast.xml
 
 mybatis:
   executor-type: reuse
