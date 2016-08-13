@@ -11,22 +11,29 @@ import org.grs.generator.model.Column;
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ColumnMapper {
     String Table = "GEN_Column";
-    String LIMIT = " LIMIT #{limit}";
+    String LIST = "SELECT * FROM " + Table;
+    String HAS = "SELECT COUNT(*) > 0 FROM " + Table;
+    String DELETE = "DELETE FROM " + Table;
+
+    String _LIMIT = " LIMIT #{limit}";
     String _OFFSET = " OFFSET #{offset}";
-    String LIMIT_OFFSET = LIMIT + _OFFSET;
-    String WHERE_ID = " WHERE id = #{id}";
+    String _LIMIT_OFFSET = _LIMIT + _OFFSET;
+    String _WHERE_ID = " WHERE id = #{id}";
 
-    String LIST_ = "SELECT * FROM ";
-    String DELETE_ = "DELETE FROM ";
-    String HAS_ = "SELECT COUNT(*) > 0 FROM ";
+    /*==========EXTRA==========*/
 
-    String LIST = LIST_ + Table;
-    String HAS = HAS_ + Table;
+    @Select(LIST + " WHERE tableName = #{tableName}")
+    List<Column> getByTableName(String tableName);
 
-    @Select(LIST + WHERE_ID)
+    @Delete(DELETE + " WHERE tableName = #{tableName}")
+    void deleteByTableName(String tableName);
+
+    /*==========EXTRA==========*/
+
+    @Select(LIST + _WHERE_ID)
     Column get(Serializable id);
 
-    @Delete(DELETE_ + Table + WHERE_ID)
+    @Delete(DELETE + _WHERE_ID)
     Integer delete(Serializable id);
 
     @Insert({
@@ -84,26 +91,20 @@ public interface ColumnMapper {
     @SelectProvider(type = ColumnSqlProvider.class, method = "query")
     List<Column> query(Column record);
 
-    @Select(LIST + " WHERE tableName = #{tableName}")
-    List<Column> getByTableName(String tableName);
-
     @SelectProvider(type = ColumnSqlProvider.class, method = "count")
     int count(Column record);
 
-    @Delete(DELETE_ + Table + " WHERE tableName = #{tableName}")
-    void deleteByTableName(String tableName);
-
     class ColumnSqlProvider {
-        private String queryOrCount(Column record, boolean select) {
+        private String queryOrCount(Column record, boolean query) {
             return new SQL() {
                 {
-                    SELECT(select ? "*" : "COUNT(*)");
+                    SELECT(query ? "*" : "COUNT(*)");
                     FROM(Table);
                     if (record.getTableName() != null) {
                         WHERE("tableName = #{tableName}");
                     }
                 }
-            }.toString() + (select && record.needPaging() ? LIMIT_OFFSET : "");
+            }.toString() + (query && record.needPaging() ? _LIMIT_OFFSET : "");
         }
 
         public String query(Column record) {
@@ -134,23 +135,11 @@ public interface ColumnMapper {
                         SET("`nullable` = #{nullable,jdbcType=BIT}");
                     }
                     if (record.getKey() != null) {
-                        SET("`key` = #{key,jdbcType=BIT}");
+                        SET("`key` = #{key,jdbcType=VARCHAR}");
                     }
                     WHERE("id = #{id,jdbcType=INTEGER}");
                 }
             }.toString();
         }
-
-        //public String updateLabels(final List<Column> list) {
-        //    return new SQL() {
-        //        {
-        //            UPDATE(Table);
-        //            if (record.getLabel() != null) {
-        //                SET("`label` = #{label,jdbcType=VARCHAR}");
-        //            }
-        //            WHERE("id = #{id,jdbcType=INTEGER}");
-        //        }
-        //    }.toString();
-        //}
     }
 }
