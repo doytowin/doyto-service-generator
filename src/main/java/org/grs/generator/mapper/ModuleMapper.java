@@ -12,28 +12,19 @@ import org.grs.generator.model.Project;
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ModuleMapper {
     String Table = "GEN_Module";
-    String ASC = " ORDER BY id ASC";
-    String DESC = " ORDER BY id DESC";
-    String ORDER_BY_ID = " ORDER BY id ${orderBy}";
-    String LIMIT = " LIMIT #{limit}";
+    String LIST = "SELECT * FROM " + Table;
+    String HAS = "SELECT COUNT(*) > 0 FROM " + Table;
+    String DELETE = "DELETE FROM " + Table;
+
+    String _LIMIT = " LIMIT #{limit}";
     String _OFFSET = " OFFSET #{offset}";
-    String LIMIT_OFFSET = LIMIT + _OFFSET;
-    String LIMIT_1 = " LIMIT 1" + _OFFSET;
-    String WHERE_ID = " WHERE id = #{id}";
+    String _LIMIT_OFFSET = _LIMIT + _OFFSET;
+    String _WHERE_ID = " WHERE id = #{id}";
 
-    String LIST_ = "SELECT * FROM ";
-    String LOAD_ = "SELECT id FROM ";
-    String DELETE_ = "DELETE FROM ";
-    String COUNT_ = "SELECT COUNT(*) FROM ";
-    String HAS_ = "SELECT COUNT(*) > 0 FROM ";
-
-    String LIST = LIST_ + Table;
-    String HAS = HAS_ + Table;
-
-    @Select(LIST + WHERE_ID)
+    @Select(LIST + _WHERE_ID)
     Module get(Serializable id);
 
-    @Select(LIST + WHERE_ID)
+    @Select(LIST + _WHERE_ID)
     @Results(value = {
             @Result(column = "projectId", property = "projectId"),
             @Result(
@@ -49,7 +40,7 @@ public interface ModuleMapper {
     @Options(useCache = false)
     Module getWithProjectAndColumns(Serializable id);
 
-    @Delete(DELETE_ + Table + WHERE_ID)
+    @Delete(DELETE + _WHERE_ID)
     Integer delete(Serializable id);
 
     @Insert({
@@ -107,7 +98,7 @@ public interface ModuleMapper {
                         ORDER_BY("t.id desc");
                     }
                 }
-            }.toString() + (select && record.needPaging() ? LIMIT_OFFSET : "");
+            }.toString() + (select && record.needPaging() ? _LIMIT_OFFSET : "");
         }
 
         public String query(Module record) {
