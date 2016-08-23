@@ -29,27 +29,37 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
+        <start-class>org.grs.generator.GeneratorWebApplication</start-class>
+
         <main.basedir>${basedir}/../..</main.basedir>
-        <HikariCP.version>2.4.7</HikariCP.version>
-        <boot.version>1.4.0.RELEASE</boot.version>
+
+        <mysql.version>5.1.35</mysql.version>
+        <hikaricp.version>2.4.7</hikaricp.version>
+        <hazelcast.version>3.6.4</hazelcast.version>
         <angular.version>1.5.7</angular.version>
+        <lombok.version>1.16.10</lombok.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>${boot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>${boot.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -90,13 +100,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.8</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.grs</groupId>-->
-        <!--<artifactId>model</artifactId>-->
-        <!--<version>0.0.1</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
@@ -126,7 +130,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.35</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -134,6 +137,17 @@
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
         </dependency>
 
         <dependency>
@@ -152,17 +166,13 @@
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-spring</artifactId>
-            <version>3.6.4</version>
         </dependency>
 
         <!-- 数据库连接池 -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>${HikariCP.version}</version>
-            <!--<scope>runtime</scope>-->
         </dependency>
-
     </dependencies>
 
     <build>
@@ -170,7 +180,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${boot.version}</version>
+                <configuration>
+                    <finalName>${project.artifactId}##${project.version}</finalName>
+                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.springframework</groupId>
@@ -178,6 +190,17 @@
                         <version>1.2.6.RELEASE</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <warName>generator##${project.version}</warName>
+                    <packagingExcludes>
+                        %regex[WEB-INF/lib/spring-boot-starter-tomcat.*.jar]
+                    </packagingExcludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
