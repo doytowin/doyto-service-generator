@@ -85,7 +85,7 @@
         <dependency>
             <groupId>org.webjars.bower</groupId>
             <artifactId>angular-ui-router</artifactId>
-            <version>1.0.0-beta.1</version>
+            <version>0.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -198,7 +198,9 @@
                 <configuration>
                     <warName>generator##${project.version}</warName>
                     <packagingExcludes>
-                        %regex[WEB-INF/lib/spring-boot-starter-tomcat.*.jar]
+                        %regex[WEB-INF/lib/spring-boot-starter-tomcat.*.jar],
+                        %regex[WEB-INF/lib/tomcat*.jar],
+                        %regex[WEB-INF/lib/tomcat-embed-jasper.*.jar]
                     </packagingExcludes>
                 </configuration>
             </plugin>
