@@ -1,5 +1,5 @@
 server:
-  port: ${server.port:8080}
+  port: ${web.server.port:8080}
 
 logging:
   level:
@@ -41,8 +41,8 @@ mybatis:
 #    lazyLoadTriggerMethods: none
 
 ---
-spring:
-  profiles: run
-server:
-  port: 8088
+#spring:
+#  profiles: test
+#server:
+#  port: 8088
 
