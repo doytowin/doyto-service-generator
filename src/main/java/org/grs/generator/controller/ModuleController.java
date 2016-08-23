@@ -199,7 +199,9 @@ public class ModuleController {
     public ResponseObject tableColumn(@PathVariable("table") String table) {
         ResponseObject ret = new ResponseObject();
         try {
-            List list = databaseMapper.listColumns(table);
+            Column query = new Column();
+            query.setTableName(table);
+            List list = columnMapper.query(query);
             ret.setResult(list);
         } catch (Exception e) {
             ret.setMessage("表[" + table + "]不存在");
