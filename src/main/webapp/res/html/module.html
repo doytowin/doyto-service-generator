@@ -18,7 +18,7 @@
             </label>
             <button class="btn btn-default" ng-click="crud.p.reset();crud.projectName=undefined">重置</button>
             <button class="btn btn-success pull-right" data-toggle="modal" data-target="#moduleAddModal"
-                    ng-click="crud.add();sqlResolved=false;">添加模块</button>
+                    ng-click="crud.add();crud.project2=crud.project;crud.record.projectId=crud.project.id;sqlResolved=false;">添加模块</button>
         </form>
     </header>
     <section class="table-responsive" style="overflow-y:auto">
@@ -97,13 +97,18 @@
                 <div class="modal-body">
                     <form id="moduleAddForm" class="form-horizontal" autocomplete="off" novalidate>
 	                    <div class="form-group">
-		                    <label class="control-label col-xs-3 col-sm-4" for="add-projectId">所属项目</label>
-		                    <div class="col-xs-9 col-sm-5">
-			                    <select id="add-projectId" class="form-control" ng-required
-			                            ng-model="crud.record.projectId"
-			                            ng-options="option.id as option.name for option in projects track by option.id">
-				                    <option value="">-- 请选择项目 --</option>
-			                    </select>
+		                    <label class="control-label col-xs-3 col-sm-4">所属项目</label>
+		                    <div class="col-xs-9 col-sm-5 btn-group">
+			                    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				                    <span class="clip" style="width:94px;">{{crud.project2.name || ' - 请选择项目 - '}}</span>
+				                    <span class="caret"></span>
+			                    </button>
+			                    <ul class="dropdown-menu dropdown-menu-sm">
+				                    <!--<li><a ng-click="crud.p.q.projectId=undefined; crud.project=undefined; crud.p.load(true)"> - 请选择项目 - </a></li>-->
+				                    <li ng-repeat="p in projects">
+					                    <a ng-click="crud.project2=p;crud.record.projectId=p.id">{{p.name}}</a>
+				                    </li>
+			                    </ul>
 		                    </div>
 	                    </div>
 	                    <div ng-hide="sqlResolved">
