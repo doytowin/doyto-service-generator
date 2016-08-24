@@ -1,16 +1,15 @@
 package org.grs.generator.test;
 
+import javax.annotation.Resource;
+
 import org.grs.generator.GeneratorWebApplication;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -20,19 +19,17 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Yuanzhen on 2015-06-29.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = GeneratorWebApplication.class)
-@WebAppConfiguration
-@IntegrationTest("server.port=0")
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = GeneratorWebApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 @Rollback
 @ActiveProfiles("test")
 @Transactional
 public abstract class SpringTest {
-    @Autowired
+    @Resource
     private WebApplicationContext wac;
     protected MockMvc mockMvc;
-
 
     @Before
     public void setup() {
