@@ -199,8 +199,7 @@
                     <warName>generator##${project.version}</warName>
                     <packagingExcludes>
                         %regex[WEB-INF/lib/spring-boot-starter-tomcat.*.jar],
-                        %regex[WEB-INF/lib/tomcat*.jar],
-                        %regex[WEB-INF/lib/tomcat-embed-jasper.*.jar]
+                        WEB-INF/lib/tomcat-*.jar
                     </packagingExcludes>
                 </configuration>
             </plugin>
