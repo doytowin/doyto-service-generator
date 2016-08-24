@@ -13,7 +13,7 @@
     <packaging>war</packaging>
     <name>generator</name>
     <description>Spring Boot Web Static Sample</description>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <url>http://projects.spring.io/spring-boot/</url>
     <organization>
         <name>Pivotal Software, Inc.</name>
@@ -48,7 +48,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
             <exclusions>
@@ -57,12 +57,7 @@
                     <artifactId>tomcat-jdbc</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
