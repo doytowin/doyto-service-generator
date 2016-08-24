@@ -8,6 +8,7 @@ logging:
     org.springframework.web: debug
     org.grs.generator.mapper: debug
     org.springframework.beans.factory.annotation: debug
+#    com.zaxxer.hikari.HikariConfig: debug
 
 spring:
   resources:
@@ -17,7 +18,7 @@ spring:
     name: generator
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/generator?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+#    url: jdbc:mysql://localhost:3306/generator?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
     jdbcUrl: jdbc:mysql://localhost:3306/generator?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
     username: gen_user
     password: gen_pass
