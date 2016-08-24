@@ -5,10 +5,10 @@ logging:
   level:
     ROOT: info
     org.springframework.security: debug
-    org.springframework.web: debug
+    org.springframework.web.servlet: debug
     org.grs.generator.mapper: debug
     org.springframework.beans.factory.annotation: debug
-#    com.zaxxer.hikari.HikariConfig: debug
+    com.zaxxer.hikari.HikariConfig: debug
 #    com.zaxxer.hikari.pool: debug
 
 spring:

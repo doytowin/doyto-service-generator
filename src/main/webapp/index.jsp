@@ -26,6 +26,10 @@
             'ngResource'
         ]);
         var Config = window.Config || {};
+        Config.root = {
+            name:'generator',
+            url:'/'
+        };
         Config.models = [
             {
                 url: "generator",
@@ -67,13 +71,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a ui-sref="app.generator" class="navbar-brand">自动生成</a>
+            <a ui-sref="generator.generator" class="navbar-brand">自动生成</a>
         </div>
         <nav id="bs-navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li ui-sref-active="active"><a ui-sref="app.project">项目</a></li>
-                <li ui-sref-active="active"><a ui-sref="app.module">模块</a></li>
-                <li ui-sref-active="active"><a ui-sref="app.template">模板</a></li>
+                <li ui-sref-active="active"><a ui-sref="generator.project">项目</a></li>
+                <li ui-sref-active="active"><a ui-sref="generator.module">模块</a></li>
+                <li ui-sref-active="active"><a ui-sref="generator.template">模板</a></li>
             </ul>
         </nav>
     </div>
