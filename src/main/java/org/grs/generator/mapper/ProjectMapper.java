@@ -10,7 +10,7 @@ import org.grs.generator.model.Project;
 @Mapper
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ProjectMapper {
-    String Table = "GEN_Project";
+    String Table = "gen_project";
     String LIMIT = " LIMIT #{limit}";
     String _OFFSET = " OFFSET #{offset}";
     String LIMIT_OFFSET = LIMIT + _OFFSET;

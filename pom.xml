@@ -13,7 +13,7 @@
     <packaging>war</packaging>
     <name>generator</name>
     <description>Spring Boot Web Static Sample</description>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <url>http://projects.spring.io/spring-boot/</url>
     <organization>
         <name>Pivotal Software, Inc.</name>

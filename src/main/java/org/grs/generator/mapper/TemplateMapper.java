@@ -11,7 +11,7 @@ import org.grs.generator.model.Template;
 @Mapper
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface TemplateMapper {
-    String Table = "GEN_Template";
+    String Table = "gen_template";
     String ASC = " ORDER BY id ASC";
     String DESC = " ORDER BY id DESC";
     String ORDER_BY_ID = " ORDER BY id ${orderBy}";

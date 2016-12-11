@@ -11,7 +11,7 @@ import org.grs.generator.model.Project;
 @Mapper
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ModuleMapper {
-    String Table = "GEN_Module";
+    String Table = "gen_module";
     String LIST = "SELECT * FROM " + Table;
     String HAS = "SELECT COUNT(*) > 0 FROM " + Table;
     String DELETE = "DELETE FROM " + Table;

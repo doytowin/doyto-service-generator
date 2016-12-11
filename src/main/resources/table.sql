@@ -1,7 +1,7 @@
 USE generator;
 
-# DROP TABLE IF EXISTS GEN_User;
-CREATE TABLE generator.GEN_User
+# DROP TABLE IF EXISTS gen_user;
+CREATE TABLE generator.gen_user
 (
     id           INT(11) PRIMARY KEY                 NOT NULL AUTO_INCREMENT,
     username     VARCHAR(50)                         NOT NULL,
@@ -17,16 +17,16 @@ CREATE TABLE generator.GEN_User
     rank         SMALLINT(6) DEFAULT '32767'         NOT NULL
 );
 CREATE UNIQUE INDEX email
-    ON GEN_User (email);
+    ON gen_user (email);
 CREATE UNIQUE INDEX mobile
-    ON GEN_User (mobile);
+    ON gen_user (mobile);
 CREATE UNIQUE INDEX nickname
-    ON GEN_User (nickname);
+    ON gen_user (nickname);
 CREATE UNIQUE INDEX username
-    ON GEN_User (username);
+    ON gen_user (username);
 
-# DROP TABLE IF EXISTS GEN_Project;
-CREATE TABLE generator.GEN_Project
+# DROP TABLE IF EXISTS gen_project;
+CREATE TABLE generator.gen_project
 (
     id         INT(11)   NOT NULL AUTO_INCREMENT,
     userId     INT(11),
@@ -36,8 +36,8 @@ CREATE TABLE generator.GEN_Project
     PRIMARY KEY (id)
 );
 
-# DROP TABLE IF EXISTS GEN_Module;
-CREATE TABLE generator.GEN_Module
+# DROP TABLE IF EXISTS gen_module;
+CREATE TABLE generator.gen_module
 (
     id          INT(11)   NOT NULL AUTO_INCREMENT,
     projectId   INTEGER,
@@ -50,8 +50,8 @@ CREATE TABLE generator.GEN_Module
     PRIMARY KEY (id)
 );
 
-# DROP TABLE IF EXISTS GEN_Template;
-CREATE TABLE generator.GEN_Template
+# DROP TABLE IF EXISTS gen_template;
+CREATE TABLE generator.gen_template
 (
     id         INTEGER   NOT NULL AUTO_INCREMENT,
     projectId  INTEGER,
@@ -64,8 +64,8 @@ CREATE TABLE generator.GEN_Template
     PRIMARY KEY (id)
 );
 
-# DROP TABLE IF EXISTS GEN_Path;
-CREATE TABLE generator.GEN_Path
+# DROP TABLE IF EXISTS gen_path;
+CREATE TABLE generator.gen_path
 (
     moduleId   INT(11),
     templateId INT(11),
@@ -73,7 +73,7 @@ CREATE TABLE generator.GEN_Path
 );
 
 # DROP TABLE IF EXISTS GEN_Column;
-CREATE TABLE generator.GEN_Column
+CREATE TABLE generator.gen_column
 (
     id        INTEGER   NOT NULL AUTO_INCREMENT,
     tableName VARCHAR(50),

@@ -10,7 +10,7 @@ import org.grs.generator.model.Column;
 @Mapper
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ColumnMapper {
-    String Table = "GEN_Column";
+    String Table = "gen_column";
     String LIST = "SELECT * FROM " + Table;
     String HAS = "SELECT COUNT(*) > 0 FROM " + Table;
     String DELETE = "DELETE FROM " + Table;
