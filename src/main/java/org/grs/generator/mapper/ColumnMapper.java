@@ -40,7 +40,7 @@ public interface ColumnMapper {
     @Options
     int updateLabels(@Param("list") List<Column> list);
 
-    @Insert(value = {
+    @Insert({
             "<script>",
             "insert into",
             Table,
