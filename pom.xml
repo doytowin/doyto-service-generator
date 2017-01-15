@@ -3,21 +3,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <!-- Your own application should inherit from spring-boot-starter-parent -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.0.RELEASE</version>
+        <version>1.4.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>generator</artifactId>
     <packaging>war</packaging>
     <name>generator</name>
-    <description>Spring Boot Web Static Sample</description>
+    <description>代码自动生成工具</description>
     <version>1.0.2</version>
-    <url>http://projects.spring.io/spring-boot/</url>
+    <url>https://generator.doyto.win/</url>
     <organization>
-        <name>Pivotal Software, Inc.</name>
-        <url>http://www.spring.io</url>
+        <name>Doyto Network, Inc.</name>
+        <url>http://doyto.win</url>
     </organization>
     <properties>
 
@@ -33,6 +32,8 @@
 
         <main.basedir>${basedir}/../..</main.basedir>
 
+        <docker.image.prefix>doyto</docker.image.prefix>
+
         <mysql.version>5.1.35</mysql.version>
         <hikaricp.version>2.4.7</hikaricp.version>
         <hazelcast.version>3.6.4</hazelcast.version>
@@ -40,6 +41,11 @@
         <lombok.version>1.16.10</lombok.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -66,11 +72,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
@@ -186,13 +194,14 @@
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}##${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
+                <!--<configuration>
                     <finalName>${project.artifactId}##${project.version}</finalName>
-                </configuration>
+                </configuration>-->
                 <dependencies>
                     <dependency>
                         <groupId>org.springframework</groupId>
@@ -211,6 +220,23 @@
                         %regex[WEB-INF/lib/spring-boot-starter-tomcat.*.jar],
                         WEB-INF/lib/tomcat-*.jar
                     </packagingExcludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.11</version>
+                <configuration>
+                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <exposes>8080</exposes>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
                 </configuration>
             </plugin>
         </plugins>
