@@ -535,6 +535,19 @@ filter('capitalize', function() {
     return function(token) {
         return !!token ? token.charAt(0).toUpperCase() + token.slice(1) : '';
     };
+}).
+filter('camelize', function() {
+    return function(token) {
+        var ret = '';
+        if (!!token) {
+            var fragments = token.split(/[-_.\s]/);
+            ret = fragments[0];
+            for (var i = 1; i < fragments.length; i++) {
+                ret += fragments[i].charAt(0).toUpperCase() + fragments[i].slice(1);
+            }
+        }
+        return ret;
+    };
 });
 "use strict";
 
