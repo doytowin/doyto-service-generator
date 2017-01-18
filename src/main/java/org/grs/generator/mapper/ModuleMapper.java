@@ -5,21 +5,17 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Module;
 import org.grs.generator.model.Project;
 
 @Mapper
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
-public interface ModuleMapper {
+public interface ModuleMapper extends IMapper<Module> {
     String Table = "gen_module";
     String LIST = "SELECT * FROM " + Table;
     String HAS = "SELECT COUNT(*) > 0 FROM " + Table;
     String DELETE = "DELETE FROM " + Table;
-
-    String _LIMIT = " LIMIT #{limit}";
-    String _OFFSET = " OFFSET #{offset}";
-    String _LIMIT_OFFSET = _LIMIT + _OFFSET;
-    String _WHERE_ID = " WHERE id = #{id}";
 
     @Select(LIST + _WHERE_ID)
     Module get(Serializable id);
@@ -41,7 +37,8 @@ public interface ModuleMapper {
     Module getWithProjectAndColumns(Serializable id);
 
     @Delete(DELETE + _WHERE_ID)
-    Integer delete(Serializable id);
+    @Options(flushCache = Options.FlushCachePolicy.FALSE)
+    int delete(Serializable id);
 
     @Insert({
         "insert into",
@@ -50,9 +47,11 @@ public interface ModuleMapper {
         "values",
         "(#{projectId},#{name},#{displayName},#{modelName},#{fullName},#{tableName})"
     })
+    @Options(flushCache = Options.FlushCachePolicy.FALSE)
     int insert(Module record);
 
     @UpdateProvider(type = ModuleSqlProvider.class, method = "update")
+    @Options(flushCache = Options.FlushCachePolicy.FALSE)
     int update(Module record);
 
     /**
@@ -74,10 +73,12 @@ public interface ModuleMapper {
                     one = @One(select = "org.grs.generator.mapper.ProjectMapper.get")
             )
     })
+    @Options(useCache = false)
     List<Module> query(Module record);
 
     @SelectProvider(type = ModuleSqlProvider.class, method = "count")
-    int count(Module record);
+    @Options(useCache = false)
+    long count(Module record);
 
     class ModuleSqlProvider {
         private String queryOrCount(Module record, boolean select) {

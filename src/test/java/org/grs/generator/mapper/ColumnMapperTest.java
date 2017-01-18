@@ -32,7 +32,7 @@ public class ColumnMapperTest extends SpringTest {
 
     @Test
     public void testCount() throws Exception {
-        int count = columnMapper.count(new Column());
+        long count = columnMapper.count(new Column());
         System.out.println(count);
     }
 }

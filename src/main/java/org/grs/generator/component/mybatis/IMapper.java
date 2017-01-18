@@ -13,11 +13,12 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface IMapper<T> {
 
-    String LIMIT = " LIMIT #{limit}";
+    String _LIMIT = " LIMIT #{limit}";
     String _OFFSET = " OFFSET #{offset}";
-    String LIMIT_OFFSET = LIMIT + _OFFSET;
-    String LIMIT_1 = " LIMIT 1" + _OFFSET;
-    String WHERE_ID = " WHERE id = #{id}";
+    String _LIMIT_OFFSET = _LIMIT + _OFFSET;
+    String _LIMIT_1 = " LIMIT 1" + _OFFSET;
+    String _WHERE_ID = " WHERE id = #{id}";
+
     String LIST_ = "SELECT * FROM ";
     String LOAD_ = "SELECT id FROM ";
     String DELETE_ = "DELETE FROM ";

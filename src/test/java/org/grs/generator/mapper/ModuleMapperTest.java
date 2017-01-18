@@ -18,7 +18,7 @@ public class ModuleMapperTest extends SpringTest {
     @Test
     public void query() throws Exception {
         Module query = new Module();
-        query.setTableName("GEN_User");
+        query.setTableName("gen_user");
         List modules = moduleMapper.query(query);
         log.info("{}", modules);
     }
@@ -28,7 +28,7 @@ public class ModuleMapperTest extends SpringTest {
 
     @Test
     public void testCount() throws Exception {
-        int count = moduleMapper.count(new Module());
+        long count = moduleMapper.count(new Module());
         System.out.println(count);
     }
 }

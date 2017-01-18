@@ -5,16 +5,13 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Project;
 
 @Mapper
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
-public interface ProjectMapper {
+public interface ProjectMapper extends IMapper<Project> {
     String Table = "gen_project";
-    String LIMIT = " LIMIT #{limit}";
-    String _OFFSET = " OFFSET #{offset}";
-    String LIMIT_OFFSET = LIMIT + _OFFSET;
-    String WHERE_ID = " WHERE id = #{id}";
 
     String LIST_ = "SELECT * FROM ";
     String DELETE_ = "DELETE FROM ";
@@ -23,11 +20,11 @@ public interface ProjectMapper {
     String LIST = LIST_ + Table;
     String HAS = HAS_ + Table;
 
-    @Select(LIST + WHERE_ID)
+    @Select(LIST + _WHERE_ID)
     Project get(Serializable id);
 
-    @Delete(DELETE_ + Table + WHERE_ID)
-    Integer delete(Serializable id);
+    @Delete(DELETE_ + Table + _WHERE_ID)
+    int delete(Serializable id);
 
     @Insert({
         "insert into",
@@ -56,7 +53,7 @@ public interface ProjectMapper {
     List<Project> query(Project record);
 
     @SelectProvider(type = ProjectSqlProvider.class, method = "count")
-    int count(Project record);
+    long count(Project record);
 
     class ProjectSqlProvider {
         private String queryOrCount(Project record, boolean select) {
@@ -68,7 +65,7 @@ public interface ProjectMapper {
                         WHERE("name like CONCAT('%',#{name},'%')");
                     }
                 }
-            }.toString() + (select && record.needPaging() ? LIMIT_OFFSET : "");
+            }.toString() + (select && record.needPaging() ? _LIMIT_OFFSET : "");
         }
 
         public String query(Project record) {

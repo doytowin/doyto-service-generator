@@ -18,7 +18,7 @@ public class ProjectMapperTest extends SpringTest {
 
     @Test
     public void testCount() throws Exception {
-        int count = projectMapper.count(new Project());
+        long count = projectMapper.count(new Project());
         System.out.println(count);
     }
 }

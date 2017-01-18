@@ -5,11 +5,12 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Column;
 
 @Mapper
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
-public interface ColumnMapper {
+public interface ColumnMapper extends IMapper<Column> {
     String Table = "gen_column";
     String LIST = "SELECT * FROM " + Table;
     String HAS = "SELECT COUNT(*) > 0 FROM " + Table;
@@ -61,7 +62,7 @@ public interface ColumnMapper {
     Column get(Serializable id);
 
     @Delete(DELETE + _WHERE_ID)
-    Integer delete(Serializable id);
+    int delete(Serializable id);
 
     @Insert({
             "insert into",
@@ -90,7 +91,7 @@ public interface ColumnMapper {
     List<Column> query(Column record);
 
     @SelectProvider(type = ColumnSqlProvider.class, method = "count")
-    int count(Column record);
+    long count(Column record);
 
     class ColumnSqlProvider {
         private String queryOrCount(Column record, boolean query) {

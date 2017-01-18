@@ -5,36 +5,35 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Project;
 import org.grs.generator.model.Template;
 
 @Mapper
-@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
-public interface TemplateMapper {
+//@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
+@CacheNamespace(implementation = org.mybatis.caches.hazelcast.LoggingHazelcastCache.class)
+public interface TemplateMapper extends IMapper<Template> {
     String Table = "gen_template";
-    String ASC = " ORDER BY id ASC";
-    String DESC = " ORDER BY id DESC";
-    String ORDER_BY_ID = " ORDER BY id ${orderBy}";
-    String LIMIT = " LIMIT #{limit}";
-    String _OFFSET = " OFFSET #{offset}";
-    String LIMIT_OFFSET = LIMIT + _OFFSET;
-    String LIMIT_1 = " LIMIT 1" + _OFFSET;
-    String WHERE_ID = " WHERE id = #{id}";
-
-    String LIST_ = "SELECT * FROM ";
-    String LOAD_ = "SELECT id FROM ";
-    String DELETE_ = "DELETE FROM ";
-    String COUNT_ = "SELECT COUNT(*) FROM ";
-    String HAS_ = "SELECT COUNT(*) > 0 FROM ";
 
     String LIST = LIST_ + Table;
     String HAS = HAS_ + Table;
+    String LOAD = LOAD_ + Table;
+    String GET = LIST + _WHERE_ID;
+    String DELETE = DELETE_ + Table + _WHERE_ID;
 
-    @Select(LIST + WHERE_ID)
+    @Select(GET)
+    @Results({
+            @Result(column = "projectId", property = "projectId"),
+            @Result(
+                    column = "projectId", property = "project", javaType = Project.class,
+                    one = @One(select = "org.grs.generator.mapper.ProjectMapper.get")
+            )
+    })
     Template get(Serializable id);
 
-    @Delete(DELETE_ + Table + WHERE_ID)
-    Integer delete(Serializable id);
+    @Delete(DELETE)
+    //@Options(flushCache = Options.FlushCachePolicy.FALSE)
+    int delete(Serializable id);
 
     @Insert({
         "insert into",
@@ -43,9 +42,11 @@ public interface TemplateMapper {
         "values",
         "(#{projectId},#{suffix},#{path},#{cap},#{content})"
     })
+    @Options(flushCache = Options.FlushCachePolicy.FALSE)
     int insert(Template record);
 
     @UpdateProvider(type = TemplateSqlProvider.class, method = "update")
+    @Options(flushCache = Options.FlushCachePolicy.FALSE)
     int update(Template record);
 
     /**
@@ -61,29 +62,40 @@ public interface TemplateMapper {
 
     @SelectProvider(type = TemplateSqlProvider.class, method = "query")
     @Results({
-            @Result(column = "projectId", property = "projectId"),
             @Result(
-                    column = "projectId", property = "project", javaType = Project.class,
-                    one = @One(select = "org.grs.generator.mapper.ProjectMapper.get")
+                    column = "id", property = "filler", javaType = Template.class,
+                    one = @One(select = "org.grs.generator.mapper.TemplateMapper.get")
             )
     })
+    @Options(useCache = false)
     List<Template> query(Template record);
 
+    @Select(LOAD + _LIMIT)
+    @Results({
+            @Result(
+                    column = "id", property = "filler", javaType = Template.class,
+                    one = @One(select = "org.grs.generator.mapper.TemplateMapper.get")
+            )
+    })
+    @Options(useCache = false)
+    List<Template> queryTest(int limit/*Template record*/);
+
     @SelectProvider(type = TemplateSqlProvider.class, method = "count")
-    int count(Template record);
+    @Options(useCache = false)
+    long count(Template record);
 
     class TemplateSqlProvider {
         private String queryOrCount(Template record, boolean select) {
             return new SQL() {
                 {
-                    SELECT(select ? "t.*" : "COUNT(*)");
+                    SELECT(select ? "t.id" : "COUNT(*)");
                     FROM(Table + " t");
                     if (record.getProjectId() != null) {
                         WHERE("projectId = #{projectId}");
                     }
                     ORDER_BY("t.projectId");
                 }
-            }.toString() + (select && record.needPaging() ? LIMIT_OFFSET : "");
+            }.toString() + (select && record.needPaging() ? _LIMIT_OFFSET : "");
         }
 
         public String query(Template record) {
