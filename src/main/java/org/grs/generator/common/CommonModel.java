@@ -3,6 +3,7 @@ package org.grs.generator.common;
 import java.io.Serializable;
 
 import com.alibaba.fastjson.JSON;
+import org.springframework.beans.BeanUtils;
 
 /**
  * Class AbstractModel ...
@@ -28,6 +29,10 @@ public abstract class CommonModel<T extends CommonModel<?>> implements Cloneable
             // this shouldn't happen, since we are Cloneable
             throw new InternalError();
         }
+    }
+
+    public void setFiller(T source) {
+        BeanUtils.copyProperties(source, this, "desc", "limit", "total", "page");
     }
 
     @Override
