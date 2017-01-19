@@ -58,7 +58,7 @@ public class RestResponseAdvice implements ResponseBodyAdvice<Object> {
             RestResponse ret = new RestResponse();
             ret.setResult(page.getData());
             ret.setTotal(page.getTotal());
-            return body;
+            return ret;
         } else {
             return new RestResponse(body);
         }
