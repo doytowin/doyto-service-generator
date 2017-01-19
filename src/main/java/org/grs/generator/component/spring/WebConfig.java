@@ -28,6 +28,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         super.configureMessageConverters(converters);
         FastJsonHttpMessageConverter4 fastConverter = new FastJsonHttpMessageConverter4();
+
+        FastJsonConfig fastJsonConfig = new FastJsonConfig();
+        fastJsonConfig.setDateFormat("yyyy-MM-dd HH:mm:ss");
+        fastConverter.setFastJsonConfig(fastJsonConfig);
+
         converters.add(fastConverter);
     }
 }
