@@ -18,12 +18,15 @@ package org.grs.generator;
 
 import javax.servlet.Filter;
 
-import org.grs.generator.common.WebContextFilter;
+import org.apache.ibatis.plugin.Interceptor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+
+import org.grs.generator.common.WebContextFilter;
+import org.grs.generator.component.mybatis.CachingExecutorInterceptor;
 
 @SpringBootApplication
 public class GeneratorWebApplication extends SpringBootServletInitializer {
@@ -39,5 +42,10 @@ public class GeneratorWebApplication extends SpringBootServletInitializer {
     @Bean
     public Filter configWebContextFilter() {
         return new WebContextFilter();
+    }
+
+    @Bean
+    public Interceptor configMyBatisInterceptor() {
+        return new CachingExecutorInterceptor();
     }
 }
