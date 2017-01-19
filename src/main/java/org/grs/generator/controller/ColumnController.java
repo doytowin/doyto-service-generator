@@ -5,12 +5,15 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
-import org.grs.generator.common.ResponseObject;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.mapper.ColumnMapper;
 import org.grs.generator.model.Column;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * 表字段管理模块基本操作。
@@ -20,32 +23,25 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/column")
-public class ColumnController {
+public class ColumnController extends AbstractController<Column> {
     @Resource
     private ColumnMapper columnMapper;
 
+    @Override
+    IMapper<Column> getIMapper() {
+        return columnMapper;
+    }
+
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseObject query(Column column){
-        ResponseObject ret = new ResponseObject();
-        List columnList = columnMapper.query(column);
-        long count = columnMapper.count(column);
-        ret.setResult(columnList);
-        ret.setTotal(count);
-        return ret;
+    public Object query(Column column) {
+        return doQuery(column);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseObject saveLabels(@RequestBody @Valid List<Column> columns, BindingResult result) {
-        ResponseObject ret = new ResponseObject();
+    public Object saveLabels(@RequestBody @Valid List<Column> columns, BindingResult result) {
         if (result.hasErrors()) {
-            StringBuilder a = new StringBuilder();
-            for (FieldError fieldError : result.getFieldErrors()) {
-                a.append(fieldError.getDefaultMessage()).append("\n");
-            }
-            ret.setMessage(a.toString());
-            return ret;
+            return result;
         }
-        columnMapper.saveColumns(columns);
-        return ret;
+        return columnMapper.saveColumns(columns);
     }
 }

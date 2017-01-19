@@ -1,15 +1,14 @@
 package org.grs.generator.controller;
 
-import java.util.List;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
-import org.grs.generator.common.ResponseObject;
-import org.grs.generator.mapper.TemplateMapper;
-import org.grs.generator.model.Template;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import org.grs.generator.mapper.TemplateMapper;
+import org.grs.generator.model.Template;
 
 /**
  * 模板管理模块基本操作。
@@ -19,44 +18,42 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/template")
-public class TemplateController {
+public class TemplateController extends AbstractController<Template> {
     @Resource
     private TemplateMapper templateMapper;
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseObject query(Template template){
-        ResponseObject ret = new ResponseObject();
-        List templateList = templateMapper.query(template);
-        long count = templateMapper.count(template);
-        ret.setResult(templateList);
-        ret.setTotal(count);
-        return ret;
+    TemplateMapper getIMapper() {
+        return templateMapper;
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseObject add(@RequestBody @Valid Template template, BindingResult result) {
-        ResponseObject ret = new ResponseObject();
-        if (result.hasErrors()) {
-            ret.setMessage(result.getFieldError().getDefaultMessage());
-            return ret;
-        }
-        //template.setCreateUserId(AppContext.getLoginUserId());
-        templateMapper.insert(template);
-        ret.setResult(template);
-        return ret;
+    public Object add(@RequestBody @Valid Template template, BindingResult result) {
+        return doInsert(template, result);
+    }
+
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    public Object delete(@PathVariable("id") Integer id) {
+        return doDelete(id);
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public Object query(Template template) {
+        return doQuery(template);
+    }
+
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    public Object get(@PathVariable("id") Integer id) {
+        return doGet(id);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
-    public ResponseObject update(@RequestBody @Valid Template template, BindingResult result) {
-        ResponseObject ret = new ResponseObject();
+    public Object update(@RequestBody @Valid Template template, BindingResult result, @PathVariable("id") Integer id) {
         if (result.hasErrors()) {
-            ret.setMessage(result.getFieldError().getDefaultMessage());
-            return ret;
+            return result;
         }
-        Template target = templateMapper.get(template.getId());
+        Template target = templateMapper.get(id);
         if (target == null) {
-            ret.setMessage("指定记录不存在");
-            return ret;
+            return null;
         }
 
         target.setSuffix(template.getSuffix());
@@ -64,34 +61,7 @@ public class TemplateController {
         target.setCap(template.getCap());
         target.setContent(template.getContent());
         target.setValid(template.getValid());
-
         templateMapper.update(target);
-        ret.setResult(target);
-        return ret;
-    }
-
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public ResponseObject get(@PathVariable("id") Integer id) {
-        ResponseObject ret = new ResponseObject();
-        Template target = templateMapper.get(id);
-        if (target == null) {
-            ret.setMessage("指定记录不存在");
-            return ret;
-        }
-        ret.setResult(target);
-        return ret;
-    }
-
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public ResponseObject delete(@PathVariable("id") Integer id) {
-        ResponseObject ret = new ResponseObject();
-        Template target = templateMapper.get(id);
-        if (target == null) {
-            ret.setMessage("指定记录不存在");
-            return ret;
-        }
-        templateMapper.delete(id);
-        ret.setResult(target);
-        return ret;
+        return target;
     }
 }

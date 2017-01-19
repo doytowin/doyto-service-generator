@@ -12,7 +12,11 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.grs.generator.common.ResponseObject;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.mapper.ColumnMapper;
 import org.grs.generator.mapper.DatabaseMapper;
 import org.grs.generator.mapper.ModuleMapper;
@@ -20,10 +24,6 @@ import org.grs.generator.mapper.ProjectMapper;
 import org.grs.generator.model.Column;
 import org.grs.generator.model.Module;
 import org.grs.generator.model.Project;
-import org.springframework.jdbc.BadSqlGrammarException;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * 模块管理模块基本操作。
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/module")
-public class ModuleController {
+public class ModuleController extends AbstractController<Module> {
     @Resource
     private ModuleMapper moduleMapper;
 
@@ -46,44 +46,32 @@ public class ModuleController {
     @Resource
     private ProjectMapper projectMapper;
 
+    @Override
+    IMapper<Module> getIMapper() {
+        return moduleMapper;
+    }
+
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseObject query(Module module) {
-        ResponseObject ret = new ResponseObject();
-        List moduleList = moduleMapper.query(module);
-        long count = moduleMapper.count(module);
-        ret.setResult(moduleList);
-        ret.setTotal(count);
-        return ret;
+    public Object query(Module module) {
+        return doQuery(module);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @Transactional
-    public ResponseObject add(@RequestBody @Valid Module module, BindingResult result) {
-        ResponseObject ret = new ResponseObject();
+    public Object add(@RequestBody @Valid Module module, BindingResult result) {
         if (result.hasErrors()) {
-            ret.setMessage(result.getFieldError().getDefaultMessage());
-            return ret;
+            return result;
         }
         Project project = projectMapper.get(module.getProjectId());
         if (project == null) {
-            ret.setMessage("项目[" + module.getProjectId() + "]不存在!");
-            return ret;
+            throw new RuntimeException("项目[" + module.getProjectId() + "]不存在!");
         }
 
         String sql = module.getCreateSql();
-        if (sql != null) {
-            try {
-                databaseMapper.createTable(sql);
-            } catch (BadSqlGrammarException e) {
-                ret.setMessage("建表出错:" + e.getCause().getMessage());
-                return ret;
-            } catch (Exception e) {
-                ret.setMessage("建表出错:" + e.getMessage());
-                return ret;
-            }
-        } else {
-            ret.setMessage("建表sql不能为空");
-            return ret;
+        try {
+            databaseMapper.createTable(sql);
+        } catch (Exception e) {
+            throw new RuntimeException("建表出错!", e);
         }
 
         //module.setCreateUserId(AppContext.getLoginUserId());
@@ -103,21 +91,17 @@ public class ModuleController {
                 log.error("表[" + module.getTableName() + "]不存在", e);
             }
         }
-        ret.setResult(module);
-        return ret;
+        return module;
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
-    public ResponseObject update(@RequestBody @Valid Module module, BindingResult result) {
-        ResponseObject ret = new ResponseObject();
+    public Object update(@RequestBody @Valid Module module, BindingResult result) {
         if (result.hasErrors()) {
-            ret.setMessage(result.getFieldError().getDefaultMessage());
-            return ret;
+            return result;
         }
         Module target = moduleMapper.get(module.getId());
         if (target == null) {
-            ret.setMessage("指定记录不存在");
-            return ret;
+            return null;
         }
         //target.setProjectId(module.getProjectId());
         target.setName(module.getName());
@@ -130,40 +114,29 @@ public class ModuleController {
         //target.setUpdateTime(new Date());
         moduleMapper.update(target);
         //ret.setResult(target);
-        return ret;
+        return target;
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public ResponseObject get(@PathVariable("id") Integer id) {
-        ResponseObject ret = new ResponseObject();
-        Module target = moduleMapper.getWithProjectAndColumns(id);
-        if (target == null) {
-            ret.setMessage("指定记录不存在");
-            return ret;
-        }
-        ret.setResult(target);
-        return ret;
+    public Object get(@PathVariable("id") Integer id) {
+        return moduleMapper.getWithProjectAndColumns(id);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     @Transactional
-    public ResponseObject delete(@PathVariable("id") Integer id) {
-        ResponseObject ret = new ResponseObject();
+    public Object delete(@PathVariable("id") Integer id) {
         Module target = moduleMapper.get(id);
         if (target == null) {
-            ret.setMessage("指定记录不存在");
-            return ret;
+            return null;
         }
         columnMapper.deleteByTableName(target.getTableName());
         moduleMapper.delete(id);
         databaseMapper.dropTable(target.getTableName());
-        //ret.setResult(target);
-        return ret;
+        return id;
     }
 
     @RequestMapping(value = "upload/{id}", method = RequestMethod.POST)
-    public ResponseObject upload(@PathVariable("id") String id, @RequestBody JSONObject json) {
-        ResponseObject ret = new ResponseObject();
+    public Object upload(@PathVariable("id") String id, @RequestBody JSONObject json) {
 
         String rootPath = json.getString("root");
         JSONArray jsonArray = json.getJSONArray("data");
@@ -181,12 +154,12 @@ public class ModuleController {
                 run.exec("git -c core.quotepath=false add -- " + data.getString("path"), null, dir);
             } catch (IOException e) {
                 log.error("文件写入失败", e);
-                ret.setMessage("文件写入失败:" + e.getMessage());
+                throw new RuntimeException("文件写入失败!", e);
             } catch (Exception e) {
                 log.error("git添加失败", e);
             }
         }
-        return ret;
+        return EMPTY;
     }
 
     /**
@@ -196,16 +169,7 @@ public class ModuleController {
      * @return 表列
      */
     @RequestMapping(value = "table/{table}", method = RequestMethod.GET)
-    public ResponseObject tableColumn(@PathVariable("table") String table) {
-        ResponseObject ret = new ResponseObject();
-        try {
-            Column query = new Column();
-            query.setTableName(table);
-            List list = columnMapper.query(query);
-            ret.setResult(list);
-        } catch (Exception e) {
-            ret.setMessage("表[" + table + "]不存在");
-        }
-        return ret;
+    public Object tableColumn(@PathVariable("table") String table) {
+        return columnMapper.getByTableName(table);
     }
 }
