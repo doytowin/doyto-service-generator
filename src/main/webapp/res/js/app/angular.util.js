@@ -66,10 +66,11 @@ Util.camelize = function(s) {
 
 Util.handleFailure = function (data) {
     if (data && !data.success) {
-        if (data.code === '0001') {
+        if (data.code === '1') {
             location.href = 'login?redirect=' + encodeURIComponent(location.href);
         } else {
             alert(data.message || '访问错误');
+            return data.errors;
         }
     }
 };

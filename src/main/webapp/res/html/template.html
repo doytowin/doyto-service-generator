@@ -75,7 +75,7 @@
 		</div>
 	</footer>
 	<div id="templateAddModal" class="modal fade" tabindex="-1" role="dialog">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
@@ -96,7 +96,7 @@
 						<div class="form-group">
 							<div class="col-xs-offset-3 col-sm-offset-4 col-xs-9 col-sm-5">
 								<div class="checkbox">
-									<label><input id="add-cap" type="checkbox" ng-init="crud.record.cap = true" ng-model="crud.record.cap"> 文件首字母大写</label>
+									<label><input id="add-cap" type="checkbox" ng-model="crud.record.cap"> 文件首字母大写</label>
 								</div>
 							</div>
 						</div>
@@ -131,7 +131,7 @@
 		</div>
 	</div>
 	<div id="templateEditModal" class="modal fade" tabindex="-1" role="dialog">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
@@ -148,7 +148,7 @@
 						<div class="form-group">
 							<div class="col-xs-offset-3 col-sm-offset-4 col-xs-9 col-sm-5">
 								<div class="checkbox">
-									<label><input id="edit-cap" type="checkbox" ng-model="crud.record.cap"> 文件首字母大写</label>
+									<label><input id="edit-cap" type="checkbox" ng-model="crud.record.cap" ng-false-value="false"> 文件首字母大写</label>
 								</div>
 							</div>
 						</div>
@@ -190,7 +190,7 @@
 		</div>
 	</div>
 	<div id="templateViewModal" class="modal fade" tabindex="-1" role="dialog">
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>

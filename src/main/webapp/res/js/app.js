@@ -142,9 +142,13 @@ controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
                 $scope.crud.p.load();
                 $('.modal').modal('hide');
             } else {
-                Util.handleFailure(data);
+                $scope.errors = Util.handleFailure(data);
             }
         });
+
+        $scope.crud.add = function () {
+            this.record = {cap:true};
+        };
 
         //从文件读取模板内容
         $window.readContent = function (files) {
@@ -399,6 +403,7 @@ Util.handleFailure = function (data) {
             location.href = 'login?redirect=' + encodeURIComponent(location.href);
         } else {
             alert(data.message || '访问错误');
+            return data.errors;
         }
     }
 };
