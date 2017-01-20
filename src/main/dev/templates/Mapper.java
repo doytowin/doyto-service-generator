@@ -20,8 +20,9 @@ public interface {{gen.modelName}}Mapper {
     String _LIMIT_OFFSET = _LIMIT + _OFFSET;
     String _WHERE_ID = " WHERE id = #{id}";
 
-    /* ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-    /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+
+    /*i________________________________________________i*/
+    /*!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!*/
 
     @Select(LIST + _WHERE_ID)
     {{gen.modelName}} get(Serializable id);
@@ -63,12 +64,10 @@ public interface {{gen.modelName}}Mapper {
             return new SQL() <code ng-non-bindable>{{</code>
                 SELECT(query ? "*" : "COUNT(*)");
                 FROM(Table);
-                //if (record.getId() != null) {
-                //    WHERE("id = #{id}");
-                //}
-                //if (record.getName() != null) {
-                //    WHERE("name like CONCAT('%',#{name},'%')");
-                //}
+                <ng-repeat ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
+                if (record.get{{column.field | capitalize}}() != null) {
+                    WHERE("{{column.field}} = #<code>{</code>{{column.field}}}");
+                }</ng-repeat>
                 //if (query) {
                 //    ORDER_BY("createTime desc");
                 //}

@@ -15,7 +15,7 @@ controller('{{gen.name | capitalize}}Ctrl', ['$scope', '{{gen.name | capitalize}
                 $scope.crud.p.load();
                 $('.modal').modal('hide');
             } else {
-                Util.handleFailure(data);
+                $scope.errors = Util.handleFailure(data);
             }
         });
     }]
