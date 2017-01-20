@@ -1,9 +1,12 @@
 package org.grs.generator.component.spring;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -23,6 +26,7 @@ import org.grs.generator.common.ResponseCode;
  *
  * @author f0rb on 2017-01-15.
  */
+@Slf4j
 @ControllerAdvice
 public class RestResponseAdvice implements ResponseBodyAdvice<Object> {
     @Override
@@ -55,6 +59,9 @@ public class RestResponseAdvice implements ResponseBodyAdvice<Object> {
             return body;
         } else if (body instanceof PageResponse) {
             return new RestResponse(((PageResponse) body).getList(), ((PageResponse) body).getTotal());
+        } else if (body instanceof LinkedHashMap && ((LinkedHashMap) body).containsKey("error")) {
+            log.error("访问错误：{}", JSON.toJSONString(body));
+            return new RestResponse(ResponseCode.INTERNAL_SERVER_ERROR);
         } else {
             return new RestResponse(body);
         }

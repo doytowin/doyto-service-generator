@@ -14,6 +14,7 @@ public enum ResponseCode {
     ACCESS_DENIED("2", "拒绝访问!"),
     RECORD_NOT_FOUND("3", "指定记录不存在!"),
     VALIDATION_FAILED("4", "表单校验失败!"),
+    INTERNAL_SERVER_ERROR("5", "服务器访问出错!"),
     ;
 
     private String code;
