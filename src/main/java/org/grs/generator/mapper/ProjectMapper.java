@@ -13,14 +13,7 @@ import org.grs.generator.model.Project;
 public interface ProjectMapper extends IMapper<Project> {
     String Table = "gen_project";
 
-    String LIST_ = "SELECT * FROM ";
-    String DELETE_ = "DELETE FROM ";
-    String HAS_ = "SELECT COUNT(*) > 0 FROM ";
-
-    String LIST = LIST_ + Table;
-    String HAS = HAS_ + Table;
-
-    @Select(LIST + _WHERE_ID)
+    @Select(LIST_ + Table + _WHERE_ID)
     Project get(Serializable id);
 
     @Delete(DELETE_ + Table + _WHERE_ID)
@@ -45,7 +38,7 @@ public interface ProjectMapper extends IMapper<Project> {
      * @param value  待检值
      * @return 如果值存在, 则返回true; 否则返回false
      */
-    @Select(HAS + " WHERE ${column} = #{value}")
+    @Select(HAS_ + Table + " WHERE ${column} = #{value}")
     @Options(useCache = false)
     Boolean hasValueOnColumn(@Param("column") String column, @Param("value") String value);
 

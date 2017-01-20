@@ -3,8 +3,7 @@ package org.grs.generator.component.mybatis;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
 
 /**
  * IMapper
@@ -25,8 +24,12 @@ public interface IMapper<T> {
     String COUNT_ = "SELECT COUNT(*) FROM ";
     String HAS_ = "SELECT COUNT(*) > 0 FROM ";
 
+    String Table = "@{table}";
+
+    @Select(LIST_ + Table + _WHERE_ID)
     T get(@Param("id") Serializable id);
 
+    @Delete(DELETE_ + Table + _WHERE_ID)
     int delete(@Param("id") Serializable id);
 
     int insert(T t);
@@ -37,7 +40,7 @@ public interface IMapper<T> {
 
     long count(T t);
 
-    @Options(flushCache = Options.FlushCachePolicy.TRUE)
+    @Flush
     void flush();
 
 }

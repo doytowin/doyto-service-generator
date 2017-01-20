@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+
 import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Project;
 import org.grs.generator.model.Template;
@@ -15,13 +16,7 @@ import org.grs.generator.model.Template;
 public interface TemplateMapper extends IMapper<Template> {
     String Table = "gen_template";
 
-    String LIST = LIST_ + Table;
-    String HAS = HAS_ + Table;
-    String LOAD = LOAD_ + Table;
-    String GET = LIST + _WHERE_ID;
-    String DELETE = DELETE_ + Table + _WHERE_ID;
-
-    @Select(GET)
+    @Select(LIST_ + Table + _WHERE_ID)
     @Results({
             @Result(column = "projectId", property = "projectId"),
             @Result(
@@ -31,7 +26,7 @@ public interface TemplateMapper extends IMapper<Template> {
     })
     Template get(Serializable id);
 
-    @Delete(DELETE)
+    @Delete(DELETE_ + Table + _WHERE_ID)
     //@Options(flushCache = Options.FlushCachePolicy.FALSE)
     int delete(Serializable id);
 
@@ -56,7 +51,7 @@ public interface TemplateMapper extends IMapper<Template> {
      * @param value  待检值
      * @return 如果值存在, 则返回true; 否则返回false
      */
-    @Select(HAS + " WHERE ${column} = #{value}")
+    @Select(HAS_ + Table + " WHERE ${column} = #{value}")
     @Options(useCache = false)
     Boolean hasValueOnColumn(@Param("column") String column, @Param("value") String value);
 
@@ -69,16 +64,6 @@ public interface TemplateMapper extends IMapper<Template> {
     })
     @Options(useCache = false)
     List<Template> query(Template record);
-
-    @Select(LOAD + _LIMIT)
-    @Results({
-            @Result(
-                    column = "id", property = "filler", javaType = Template.class,
-                    one = @One(select = "org.grs.generator.mapper.TemplateMapper.get")
-            )
-    })
-    @Options(useCache = false)
-    List<Template> queryTest(int limit/*Template record*/);
 
     @SelectProvider(type = TemplateSqlProvider.class, method = "count")
     @Options(useCache = false)

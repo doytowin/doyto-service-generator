@@ -13,14 +13,11 @@ import org.grs.generator.model.Project;
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ModuleMapper extends IMapper<Module> {
     String Table = "gen_module";
-    String LIST = "SELECT * FROM " + Table;
-    String HAS = "SELECT COUNT(*) > 0 FROM " + Table;
-    String DELETE = "DELETE FROM " + Table;
 
-    @Select(LIST + _WHERE_ID)
+    @Select(LIST_ + Table + _WHERE_ID)
     Module get(Serializable id);
 
-    @Select(LIST + _WHERE_ID)
+    @Select(LIST_ + Table + _WHERE_ID)
     @Results(value = {
             @Result(column = "projectId", property = "projectId"),
             @Result(
@@ -36,7 +33,7 @@ public interface ModuleMapper extends IMapper<Module> {
     @Options(useCache = false)
     Module getWithProjectAndColumns(Serializable id);
 
-    @Delete(DELETE + _WHERE_ID)
+    @Delete(DELETE_ + Table + _WHERE_ID)
     @Options(flushCache = Options.FlushCachePolicy.FALSE)
     int delete(Serializable id);
 
@@ -61,7 +58,7 @@ public interface ModuleMapper extends IMapper<Module> {
      * @param value  待检值
      * @return 如果值存在, 则返回true; 否则返回false
      */
-    @Select(HAS + " WHERE ${column} = #{value}")
+    @Select(HAS_ + Table + " WHERE ${column} = #{value}")
     @Options(useCache = false)
     Boolean hasValueOnColumn(@Param("column") String column, @Param("value") String value);
 

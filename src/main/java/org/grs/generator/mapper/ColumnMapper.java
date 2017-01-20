@@ -12,20 +12,12 @@ import org.grs.generator.model.Column;
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ColumnMapper extends IMapper<Column> {
     String Table = "gen_column";
-    String LIST = "SELECT * FROM " + Table;
-    String HAS = "SELECT COUNT(*) > 0 FROM " + Table;
-    String DELETE = "DELETE FROM " + Table;
-
-    String _LIMIT = " LIMIT #{limit}";
-    String _OFFSET = " OFFSET #{offset}";
-    String _LIMIT_OFFSET = _LIMIT + _OFFSET;
-    String _WHERE_ID = " WHERE id = #{id}";
 
     /* ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
-    @Select(LIST + " WHERE tableName = #{tableName}")
+    @Select(LIST_ + Table + " WHERE tableName = #{tableName}")
     List<Column> getByTableName(String tableName);
 
-    @Delete(DELETE + " WHERE tableName = #{tableName}")
+    @Delete(DELETE_ + Table + " WHERE tableName = #{tableName}")
     void deleteByTableName(String tableName);
 
     @Update(value = {
@@ -58,10 +50,10 @@ public interface ColumnMapper extends IMapper<Column> {
     int saveColumns(@Param("list") List<Column> list);
     /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
 
-    @Select(LIST + _WHERE_ID)
+    @Select(LIST_ + Table + _WHERE_ID)
     Column get(Serializable id);
 
-    @Delete(DELETE + _WHERE_ID)
+    @Delete(DELETE_ + Table + _WHERE_ID)
     int delete(Serializable id);
 
     @Insert({
@@ -83,7 +75,7 @@ public interface ColumnMapper extends IMapper<Column> {
      * @param value  待检值
      * @return 如果值存在, 则返回true; 否则返回false
      */
-    @Select(HAS + " WHERE ${column} = #{value}")
+    @Select(HAS_ + Table + " WHERE ${column} = #{value}")
     @Options(useCache = false)
     Boolean hasValueOnColumn(@Param("column") String column, @Param("value") String value);
 

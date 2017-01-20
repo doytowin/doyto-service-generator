@@ -11,23 +11,14 @@ import org.grs.generator.model.{{gen.modelName}};
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface {{gen.modelName}}Mapper {
     String Table = "{{gen.tableName}}";
-    String LIST = "SELECT * FROM " + Table;
-    String HAS = "SELECT COUNT(*) > 0 FROM " + Table;
-    String DELETE = "DELETE FROM " + Table;
-
-    String _LIMIT = " LIMIT #{limit}";
-    String _OFFSET = " OFFSET #{offset}";
-    String _LIMIT_OFFSET = _LIMIT + _OFFSET;
-    String _WHERE_ID = " WHERE id = #{id}";
-
 
     /*i________________________________________________i*/
     /*!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!*/
 
-    @Select(LIST + _WHERE_ID)
+    @Select(LIST_ + Table + _WHERE_ID)
     {{gen.modelName}} get(Serializable id);
 
-    @Delete(DELETE + _WHERE_ID)
+    @Delete(DELETE_ + Table + _WHERE_ID)
     Integer delete(Serializable id);
 
     @Insert({
@@ -49,7 +40,7 @@ public interface {{gen.modelName}}Mapper {
      * @param value  待检值
      * @return 如果值存在, 则返回true; 否则返回false
      */
-    @Select(HAS + " WHERE ${column} = #{value}")
+    @Select(HAS_ + Table + " WHERE ${column} = #{value}")
     @Options(useCache = false)
     Boolean hasValueOnColumn(@Param("column") String column, @Param("value") String value);
 
