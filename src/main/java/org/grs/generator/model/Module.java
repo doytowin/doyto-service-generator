@@ -3,8 +3,6 @@ package org.grs.generator.model;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
 import org.grs.generator.common.PageableModel;
 
 @lombok.Getter
@@ -28,7 +26,7 @@ public class Module extends PageableModel<Module> {
     private Date createTime;
 
     //表单字段
-    @NotNull(message = "建表sql不能为空")
+    //update时不需要对createSql判空@NotNull(message = "建表sql不能为空")
     private String createSql;
 
     //返回字段
