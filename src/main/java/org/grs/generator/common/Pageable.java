@@ -1,7 +1,5 @@
 package org.grs.generator.common;
 
-import java.util.List;
-
 /**
  * Model的分页接口
  *
@@ -45,7 +43,6 @@ public interface Pageable<M> {
         private int limit = LIMIT_SIZE; //分页大小
         private long total = 0; //记录总数
         private boolean desc = false; //分页倒序
-        private List data; //数据列表
 
         public long getOffset() {
             return offset;
@@ -126,13 +123,6 @@ public interface Pageable<M> {
             this.desc = desc;
         }
 
-        public List getData() {
-            return data;
-        }
-
-        public void setData(List data) {
-            this.data = data;
-        }
     }
 
 }

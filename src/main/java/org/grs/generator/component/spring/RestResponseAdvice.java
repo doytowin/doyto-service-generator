@@ -15,7 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import org.grs.generator.common.Pageable;
+import org.grs.generator.common.PageResponse;
 import org.grs.generator.common.ResponseCode;
 
 /**
@@ -53,12 +53,8 @@ public class RestResponseAdvice implements ResponseBodyAdvice<Object> {
             return ret;
         } else if (body instanceof RestResponse) {
             return body;
-        } else if (body instanceof Pageable.Page) {
-            Pageable.Page page = (Pageable.Page) body;
-            RestResponse ret = new RestResponse();
-            ret.setResult(page.getData());
-            ret.setTotal(page.getTotal());
-            return ret;
+        } else if (body instanceof PageResponse) {
+            return new RestResponse(((PageResponse) body).getList(), ((PageResponse) body).getTotal());
         } else {
             return new RestResponse(body);
         }

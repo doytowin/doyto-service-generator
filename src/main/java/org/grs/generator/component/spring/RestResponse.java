@@ -33,6 +33,11 @@ public class RestResponse implements Serializable {
         this.result = result;
     }
 
+    public RestResponse(Object result, Long total) {
+        this.result = result;
+        this.total = total;
+    }
+
     public RestResponse(ResponseCode code) {
         this.success = false;
         this.code = code.getCode();
@@ -48,9 +53,9 @@ public class RestResponse implements Serializable {
         return JSON.toJSONString(this);
     }
 
-    public synchronized Map<String, List<String>> getErrors() {
-        return hasErrors() ? new LinkedHashMap<>(internalGetMessages()) : null;
-    }
+    //public synchronized Map<String, List<String>> getErrors() {
+    //    return hasErrors() ? new LinkedHashMap<>(internalGetMessages()) : null;
+    //}
 
     public synchronized void addError(String fieldName, String message) {
         final Map<String, List<String>> messages = internalGetMessages();

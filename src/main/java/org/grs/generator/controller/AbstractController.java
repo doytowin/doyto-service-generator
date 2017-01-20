@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.validation.BindingResult;
 
+import org.grs.generator.common.PageResponse;
 import org.grs.generator.common.Pageable;
 import org.grs.generator.component.mybatis.IMapper;
 
@@ -38,12 +39,9 @@ abstract class AbstractController<T extends Pageable<T>> {
     //}
     //
     //Object doQuery(IMapper<T> mapper, T query) {
-    //    Pageable.Page page = new Pageable.Page();
-    //    List columnList = mapper.query(query);
+    //    List<T> columnList = mapper.query(query);
     //    long total = mapper.count(query);
-    //    page.setData(columnList);
-    //    page.setTotal(total);
-    //    return page;
+    //    return new PageResponse<T>(columnList, total);
     //}
     //
     //Object doGet(IMapper<T> mapper, Serializable id) {
@@ -68,12 +66,9 @@ abstract class AbstractController<T extends Pageable<T>> {
     }
 
     Object doQuery(T query) {
-        Pageable.Page page = new Pageable.Page();
-        List columnList = getIMapper().query(query);
+        List<T> columnList = getIMapper().query(query);
         long total = getIMapper().count(query);
-        page.setData(columnList);
-        page.setTotal(total);
-        return page;
+        return new PageResponse<T>(columnList, total);
     }
 
     Object doGet(Serializable id) {
