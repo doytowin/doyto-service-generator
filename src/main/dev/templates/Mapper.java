@@ -5,11 +5,13 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.{{gen.modelName}};
 
 @Mapper
 @CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
-public interface {{gen.modelName}}Mapper {
+public interface {{gen.modelName}}Mapper extends IMapper<{{gen.modelName}}> {
     String Table = "{{gen.tableName}}";
 
     /*i________________________________________________i*/
@@ -19,7 +21,7 @@ public interface {{gen.modelName}}Mapper {
     {{gen.modelName}} get(Serializable id);
 
     @Delete(DELETE_ + Table + _WHERE_ID)
-    Integer delete(Serializable id);
+    int delete(Serializable id);
 
     @Insert({
             "insert into",
@@ -48,14 +50,14 @@ public interface {{gen.modelName}}Mapper {
     List&lt;{{gen.modelName}}&gt; query({{gen.modelName}} record);
 
     @SelectProvider(type = {{gen.modelName}}SqlProvider.class, method = "count")
-    int count({{gen.modelName}} record);
+    @Options(useCache = false)
+    long count({{gen.modelName}} record);
 
     class {{gen.modelName}}SqlProvider {
         private String queryOrCount({{gen.modelName}} record, boolean query) {
             return new SQL() <code ng-non-bindable>{{</code>
                 SELECT(query ? "*" : "COUNT(*)");
-                FROM(Table);
-                <ng-repeat ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
+                FROM(Table);<ng-repeat ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
                 if (record.get{{column.field | capitalize}}() != null) {
                     WHERE("{{column.field}} = #<code>{</code>{{column.field}}}");
                 }</ng-repeat>

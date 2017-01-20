@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+
 import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Column;
 
@@ -13,7 +14,7 @@ import org.grs.generator.model.Column;
 public interface ColumnMapper extends IMapper<Column> {
     String Table = "gen_column";
 
-    /* ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ */
+    /*i________________________________________________i*/
     @Select(LIST_ + Table + " WHERE tableName = #{tableName}")
     List<Column> getByTableName(String tableName);
 
@@ -48,7 +49,7 @@ public interface ColumnMapper extends IMapper<Column> {
     })
     @Options(useGeneratedKeys = true)
     int saveColumns(@Param("list") List<Column> list);
-    /* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */
+    /*!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!*/
 
     @Select(LIST_ + Table + _WHERE_ID)
     Column get(Serializable id);
@@ -83,6 +84,7 @@ public interface ColumnMapper extends IMapper<Column> {
     List<Column> query(Column record);
 
     @SelectProvider(type = ColumnSqlProvider.class, method = "count")
+    @Options(useCache = false)
     long count(Column record);
 
     class ColumnSqlProvider {
