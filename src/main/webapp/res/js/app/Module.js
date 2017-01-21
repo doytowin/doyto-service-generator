@@ -7,7 +7,7 @@ factory('Module', ['$resource',
     function ($resource) {
         return $resource('api/module/:id', {id: '@id'}, {
             upload: {url:'api/module/upload/:id', method: 'POST'},
-            table: {url:'api/module/table/:table', method: 'GET'},
+            table: {url:'api/table/:table', method: 'GET'},
             template: {url:'api/template/', method: 'GET'}
         });
     }]

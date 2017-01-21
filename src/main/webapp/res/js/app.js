@@ -29,7 +29,7 @@ factory('Module', ['$resource',
     function ($resource) {
         return $resource('api/module/:id', {id: '@id'}, {
             upload: {url:'api/module/upload/:id', method: 'POST'},
-            table: {url:'api/module/table/:table', method: 'GET'},
+            table: {url:'api/table/:table', method: 'GET'},
             template: {url:'api/template/', method: 'GET'}
         });
     }]
@@ -399,7 +399,7 @@ Util.camelize = function(s) {
 
 Util.handleFailure = function (data) {
     if (data && !data.success) {
-        if (data.code === '0001') {
+        if (data.code === '1') {
             location.href = 'login?redirect=' + encodeURIComponent(location.href);
         } else {
             alert(data.message || '访问错误');

@@ -159,15 +159,4 @@ public class ModuleController extends AbstractController<Module> {
         }
         return EMPTY;
     }
-
-    /**
-     * 按表名取表列
-     *
-     * @param table 表名
-     * @return 表列
-     */
-    @RequestMapping(value = "table/{table}", method = RequestMethod.GET)
-    public Object tableColumn(@PathVariable("table") String table) {
-        return columnMapper.getByTableName(table);
-    }
 }

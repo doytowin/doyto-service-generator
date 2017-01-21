@@ -34,7 +34,7 @@
             {
                 url: "generator",
                 title: "自动生成",
-                sticky: true
+                sticky: false
             },
             {
                 url: "project",
