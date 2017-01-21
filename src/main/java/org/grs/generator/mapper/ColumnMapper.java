@@ -84,7 +84,6 @@ public interface ColumnMapper extends IMapper<Column> {
     List<Column> query(Column record);
 
     @SelectProvider(type = ColumnSqlProvider.class, method = "count")
-    @Options(useCache = false)
     long count(Column record);
 
     class ColumnSqlProvider {

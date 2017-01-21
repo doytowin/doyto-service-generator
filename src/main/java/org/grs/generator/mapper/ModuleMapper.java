@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+
 import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Module;
 import org.grs.generator.model.Project;
@@ -38,11 +39,11 @@ public interface ModuleMapper extends IMapper<Module> {
     int delete(Serializable id);
 
     @Insert({
-        "insert into",
-        Table,
-        "(`projectId`,`name`,`displayName`,`modelName`,`fullName`,`tableName`)",
-        "values",
-        "(#{projectId},#{name},#{displayName},#{modelName},#{fullName},#{tableName})"
+            "insert into",
+            Table,
+            "(`projectId`,`name`,`displayName`,`modelName`,`fullName`,`tableName`)",
+            "values",
+            "(#{projectId},#{name},#{displayName},#{modelName},#{fullName},#{tableName})"
     })
     @Options(flushCache = Options.FlushCachePolicy.FALSE)
     int insert(Module record);
@@ -64,10 +65,9 @@ public interface ModuleMapper extends IMapper<Module> {
 
     @SelectProvider(type = ModuleSqlProvider.class, method = "query")
     @Results({
-            @Result(column = "projectId", property = "projectId"),
             @Result(
-                    column = "projectId", property = "project", javaType = Project.class,
-                    one = @One(select = "org.grs.generator.mapper.ProjectMapper.get")
+                    column = "id", property = "filler", javaType = Module.class,
+                    one = @One(select = "org.grs.generator.mapper.ModuleMapper.get")
             )
     })
     @Options(useCache = false)
@@ -81,7 +81,7 @@ public interface ModuleMapper extends IMapper<Module> {
         private String queryOrCount(Module record, boolean select) {
             return new SQL() {
                 {
-                    SELECT(select ? "t.*" : "COUNT(*)");
+                    SELECT(select ? "t.id" : "COUNT(*)");
                     FROM(Table + " t");
                     if (record.getName() != null) {
                         WHERE("t.name like CONCAT('%',#{name},'%')");
