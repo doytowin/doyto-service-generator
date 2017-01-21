@@ -22,6 +22,7 @@ public class TemplateController extends AbstractController<Template> {
     @Resource
     private TemplateMapper templateMapper;
 
+    @Override
     TemplateMapper getIMapper() {
         return templateMapper;
     }
@@ -36,14 +37,14 @@ public class TemplateController extends AbstractController<Template> {
         return doDelete(id);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public Object query(Template template) {
-        return doQuery(template);
-    }
-
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     public Object get(@PathVariable("id") Integer id) {
         return doGet(id);
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public Object query(Template template) {
+        return doQuery(template);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.POST)

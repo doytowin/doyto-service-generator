@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.mapper.ColumnMapper;
 import org.grs.generator.mapper.DatabaseMapper;
 import org.grs.generator.mapper.ModuleMapper;
@@ -47,7 +46,7 @@ public class ModuleController extends AbstractController<Module> {
     private ProjectMapper projectMapper;
 
     @Override
-    IMapper<Module> getIMapper() {
+    ModuleMapper getIMapper() {
         return moduleMapper;
     }
 
@@ -113,7 +112,6 @@ public class ModuleController extends AbstractController<Module> {
         //target.setUpdateUserId(AppContext.getLoginUserId());
         //target.setUpdateTime(new Date());
         moduleMapper.update(target);
-        //ret.setResult(target);
         return target;
     }
 

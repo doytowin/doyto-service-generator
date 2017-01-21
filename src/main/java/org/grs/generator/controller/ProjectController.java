@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.mapper.ProjectMapper;
 import org.grs.generator.model.Project;
 
@@ -24,7 +23,7 @@ public class ProjectController extends AbstractController<Project> {
     private ProjectMapper projectMapper;
 
     @Override
-    IMapper<Project> getIMapper() {
+    ProjectMapper getIMapper() {
         return projectMapper;
     }
 
@@ -44,16 +43,16 @@ public class ProjectController extends AbstractController<Project> {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Object query(Project project){
+    public Object query(Project project) {
         return doQuery(project);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.POST)
-    public Object update(@RequestBody @Valid Project project, BindingResult result) {
+    public Object update(@RequestBody @Valid Project project, BindingResult result, @PathVariable("id") Integer id) {
         if (result.hasErrors()) {
             return result;
         }
-        Project target = projectMapper.get(project.getId());
+        Project target = projectMapper.get(id);
         if (target == null) {
             return null;
         }

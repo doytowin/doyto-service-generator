@@ -6,17 +6,13 @@ import javax.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.mapper.ColumnMapper;
 import org.grs.generator.model.Column;
 
 /**
- * 表字段管理模块基本操作。
+ * 表列管理模块基本操作。
  *
  * @author Yuanzhen on 2016-07-23.
  */
@@ -28,7 +24,7 @@ public class ColumnController extends AbstractController<Column> {
     private ColumnMapper columnMapper;
 
     @Override
-    IMapper<Column> getIMapper() {
+    ColumnMapper getIMapper() {
         return columnMapper;
     }
 
