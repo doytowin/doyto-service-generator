@@ -56,8 +56,13 @@ public class ProjectController extends AbstractController<Project> {
         if (target == null) {
             return null;
         }
+        //target.setUserId(project.getUserId()); 
         target.setName(project.getName());
         target.setPath(project.getPath());
+        target.setJdbcDriver(project.getJdbcDriver());
+        target.setJdbcUrl(project.getJdbcUrl());
+        target.setJdbcUsername(project.getJdbcUsername());
+        target.setJdbcPassword(project.getJdbcPassword());
 
         projectMapper.update(target);
         return target;

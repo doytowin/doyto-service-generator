@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
+
 import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Project;
 
@@ -20,11 +21,11 @@ public interface ProjectMapper extends IMapper<Project> {
     int delete(Serializable id);
 
     @Insert({
-        "insert into",
-        Table,
-        "(`userId`,`name`,`path`)",
-        "values",
-        "(#{userId},#{name},#{path})"
+            "insert into",
+            Table,
+            "(`userId`,`name`,`path`,`jdbcDriver`,`jdbcUrl`,`jdbcUsername`,`jdbcPassword`)",
+            "values",
+            "(#{userId},#{name},#{path},#{jdbcDriver},#{jdbcUrl},#{jdbcUsername},#{jdbcPassword})"
     })
     int insert(Project record);
 
@@ -49,16 +50,14 @@ public interface ProjectMapper extends IMapper<Project> {
     long count(Project record);
 
     class ProjectSqlProvider {
-        private String queryOrCount(Project record, boolean select) {
-            return new SQL() {
-                {
-                    SELECT(select ? "*" : "COUNT(*)");
-                    FROM(Table);
-                    if (record.getName() != null) {
-                        WHERE("name like CONCAT(#{name},'%')");
-                    }
+        private String queryOrCount(Project record, boolean query) {
+            return new SQL() {{
+                SELECT(query ? "*" : "COUNT(*)");
+                FROM(Table);
+                if (record.getName() != null) {
+                    WHERE("name like CONCAT(#{name},'%')");
                 }
-            }.toString() + (select && record.needPaging() ? _LIMIT_OFFSET : "");
+            }}.toString() + (query && record.needPaging() ? _LIMIT_OFFSET : "");
         }
 
         public String query(Project record) {
@@ -70,21 +69,31 @@ public interface ProjectMapper extends IMapper<Project> {
         }
 
         public String update(final Project record) {
-            return new SQL() {
-                {
-                    UPDATE(Table);
-                    if (record.getUserId() != null) {
-                        SET("`userId` = #{userId,jdbcType=INTEGER}");
-                    }
-                    if (record.getName() != null) {
-                        SET("`name` = #{name,jdbcType=VARCHAR}");
-                    }
-                    if (record.getPath() != null) {
-                        SET("`path` = #{path,jdbcType=VARCHAR}");
-                    }
-                    WHERE("id = #{id,jdbcType=INTEGER}");
+            return new SQL() {{
+                UPDATE(Table);
+                if (record.getUserId() != null) {
+                    SET("`userId` = #{userId,jdbcType=INTEGER}");
                 }
-            }.toString();
+                if (record.getName() != null) {
+                    SET("`name` = #{name,jdbcType=VARCHAR}");
+                }
+                if (record.getPath() != null) {
+                    SET("`path` = #{path,jdbcType=VARCHAR}");
+                }
+                if (record.getJdbcDriver() != null) {
+                    SET("`jdbcDriver` = #{jdbcDriver,jdbcType=VARCHAR}");
+                }
+                if (record.getJdbcUrl() != null) {
+                    SET("`jdbcUrl` = #{jdbcUrl,jdbcType=VARCHAR}");
+                }
+                if (record.getJdbcUsername() != null) {
+                    SET("`jdbcUsername` = #{jdbcUsername,jdbcType=VARCHAR}");
+                }
+                if (record.getJdbcPassword() != null) {
+                    SET("`jdbcPassword` = #{jdbcPassword,jdbcType=VARCHAR}");
+                }
+                WHERE("id = #{id,jdbcType=INTEGER}");
+            }}.toString();
         }
     }
 }

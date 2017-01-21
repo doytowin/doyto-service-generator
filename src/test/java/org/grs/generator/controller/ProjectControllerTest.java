@@ -1,9 +1,10 @@
 package org.grs.generator.controller;
 
-import org.grs.generator.test.SpringTest;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.RequestBuilder;
+
+import org.grs.generator.test.SpringTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

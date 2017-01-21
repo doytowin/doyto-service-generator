@@ -16,6 +16,14 @@ public class Project extends PageableModel<Project> {
 
     private String path;
 
+    private String jdbcDriver;
+
+    private String jdbcUrl;
+
+    private String jdbcUsername;
+
+    private String jdbcPassword;
+
     private Date createTime;
 
 }
