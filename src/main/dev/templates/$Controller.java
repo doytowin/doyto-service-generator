@@ -13,7 +13,7 @@ import org.grs.generator.model.{{gen.name | capitalize}};
 /**
  * {{gen.displayName}}管理模块基本操作。
  *
- * @author Yuanzhen on {{Date.now() | date:'yyyy-MM-dd'}}.
+ * @author f0rb on {{Date.now() | date:'yyyy-MM-dd'}}.
  */
 @Slf4j
 @RestController

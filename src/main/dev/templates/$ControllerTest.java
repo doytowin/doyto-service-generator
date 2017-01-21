@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * ControllerTest类
  *
- * @author Yuanzhen on {{Date.now() | date:'yyyy-MM-dd'}}.
+ * @author f0rb on {{Date.now() | date:'yyyy-MM-dd'}}.
  */
 public class {{gen.name | capitalize}}ControllerTest extends SpringTest {
 
