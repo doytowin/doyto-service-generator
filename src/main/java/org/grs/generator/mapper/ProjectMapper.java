@@ -55,7 +55,7 @@ public interface ProjectMapper extends IMapper<Project> {
                     SELECT(select ? "*" : "COUNT(*)");
                     FROM(Table);
                     if (record.getName() != null) {
-                        WHERE("name like CONCAT('%',#{name},'%')");
+                        WHERE("name like CONCAT(#{name},'%')");
                     }
                 }
             }.toString() + (select && record.needPaging() ? _LIMIT_OFFSET : "");

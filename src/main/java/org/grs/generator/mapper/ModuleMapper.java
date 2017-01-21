@@ -84,7 +84,7 @@ public interface ModuleMapper extends IMapper<Module> {
                     SELECT(select ? "t.id" : "COUNT(*)");
                     FROM(Table + " t");
                     if (record.getName() != null) {
-                        WHERE("t.name like CONCAT('%',#{name},'%')");
+                        WHERE("t.name like CONCAT(#{name},'%')");
                     }
                     if (record.getTableName() != null) {
                         WHERE("t.tableName = #{tableName}");
