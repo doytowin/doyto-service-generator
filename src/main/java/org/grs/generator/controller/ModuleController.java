@@ -91,7 +91,7 @@ public class ModuleController extends AbstractController<Module> {
         JSONArray jsonArray = json.getJSONArray("data");
 
         if (StringUtils.isEmpty(rootPath)) {
-            rootPath = "";//AppContext.getContextRealPath("res" + File.separator + "tmp" + File.separator);
+            rootPath = "";
         }
         Runtime run = Runtime.getRuntime();
         File dir = new File(rootPath);
