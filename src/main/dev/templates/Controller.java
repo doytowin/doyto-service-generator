@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.mapper.{{gen.name | capitalize}}Mapper;
 import org.grs.generator.model.{{gen.name | capitalize}};
 

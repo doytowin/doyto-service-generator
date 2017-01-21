@@ -14,8 +14,38 @@ import org.grs.generator.model.{{gen.modelName}};
 public interface {{gen.modelName}}Mapper extends IMapper<{{gen.modelName}}> {
     String Table = "{{gen.tableName}}";
 
-    /*i________________________________________________i*/
-    /*!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!*/
+    class {{gen.modelName}}SqlProvider {
+        private String queryOrCount({{gen.modelName}} record, boolean query) {
+            return new SQL() <code ng-non-bindable>{{</code>
+                SELECT(query ? "*" : "COUNT(*)");
+                FROM(Table);<ng-repeat ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
+                if (record.get{{column.field | capitalize}}() != null) {
+                    WHERE("{{column.field}} = #<code>{</code>{{column.field}}}");
+                }</ng-repeat>
+                //if (query) {
+                //    ORDER_BY("createTime desc");
+                //}
+            }}.toString() + (query && record.needPaging() ? _LIMIT_OFFSET : "");
+        }
+
+        public String query({{gen.modelName}} record) {
+            return queryOrCount(record, true);
+        }
+
+        public String count({{gen.modelName}} record) {
+            return queryOrCount(record, false);
+        }
+
+        public String update(final {{gen.modelName}} record) {
+            return new SQL() <code ng-non-bindable>{{</code>
+                UPDATE(Table);<ng-repeat ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
+                if (record.get{{column.field | capitalize}}() != null) {
+                    SET("`{{column.field}}` = #<code>{</code>{{column.field}},jdbcType={{column.jdbcType}}}");
+                }</ng-repeat>
+                WHERE("id = #{id,jdbcType=INTEGER}");
+            }}.toString();
+        }
+    }
 
     @Select(LIST_ + Table + _WHERE_ID)
     {{gen.modelName}} get(Serializable id);
@@ -50,39 +80,7 @@ public interface {{gen.modelName}}Mapper extends IMapper<{{gen.modelName}}> {
     List&lt;{{gen.modelName}}&gt; query({{gen.modelName}} record);
 
     @SelectProvider(type = {{gen.modelName}}SqlProvider.class, method = "count")
-    @Options(useCache = false)
     long count({{gen.modelName}} record);
 
-    class {{gen.modelName}}SqlProvider {
-        private String queryOrCount({{gen.modelName}} record, boolean query) {
-            return new SQL() <code ng-non-bindable>{{</code>
-                SELECT(query ? "*" : "COUNT(*)");
-                FROM(Table);<ng-repeat ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
-                if (record.get{{column.field | capitalize}}() != null) {
-                    WHERE("{{column.field}} = #<code>{</code>{{column.field}}}");
-                }</ng-repeat>
-                //if (query) {
-                //    ORDER_BY("createTime desc");
-                //}
-            }}.toString() + (query && record.needPaging() ? _LIMIT_OFFSET : "");
-        }
-
-        public String query({{gen.modelName}} record) {
-            return queryOrCount(record, true);
-        }
-
-        public String count({{gen.modelName}} record) {
-            return queryOrCount(record, false);
-        }
-
-        public String update(final {{gen.modelName}} record) {
-            return new SQL() <code ng-non-bindable>{{</code>
-                UPDATE(Table);<ng-repeat ng-repeat="column in columns | regex:'field':'^(?!id$|create)'">
-                if (record.get{{column.field | capitalize}}() != null) {
-                    SET("`{{column.field}}` = #<code>{</code>{{column.field}},jdbcType={{column.jdbcType}}}");
-                }</ng-repeat>
-                WHERE("id = #{id,jdbcType=INTEGER}");
-            }}.toString();
-        }
-    }
+    /*!^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^!*/
 }

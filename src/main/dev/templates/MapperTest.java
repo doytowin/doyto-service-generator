@@ -1,11 +1,12 @@
 package org.grs.generator.mapper;
 
-import java.util.List;
 import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 
 import org.grs.generator.model.{{gen.name | capitalize}};
 import org.grs.generator.test.SpringTest;
-import org.junit.Test;
 
 import static org.junit.Assert.*;
 
@@ -14,6 +15,7 @@ import static org.junit.Assert.*;
  *
  * @author Yuanzhen on {{Date.now() | date:'yyyy-MM-dd'}}.
  */
+@Slf4j
 public class {{gen.name | capitalize}}MapperTest extends SpringTest {
 
     @Resource
@@ -21,7 +23,7 @@ public class {{gen.name | capitalize}}MapperTest extends SpringTest {
 
     @Test
     public void testCount() throws Exception {
-        int count = {{gen.name}}Mapper.count(new {{gen.name | capitalize}}());
-        System.out.println(count);
+        long count = {{gen.name}}Mapper.count(new {{gen.name | capitalize}}());
+        log.info("结果总数：{}", count);
     }
 }
