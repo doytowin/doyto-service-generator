@@ -1,49 +1,45 @@
 <style>
-.nav-pills > li {
-padding:0 10px 10px 0;
-}
+.nav-pills > li {padding:0 10px 10px 0;}
 </style>
 <div ng-controller="GeneratorCtrl">
     <header style="margin:5px 0">
-	    <div class="clearfix">
-		    <ul class="nav nav-pills">
-			    <li>
-				    <div class="btn-group">
-					    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-						    <span class="clip" style="min-width:94px;">{{projectName || '请选择项目'}}</span>
-						    <span class="caret"></span>
-					    </button>
-					    <ul class="dropdown-menu dropdown-menu-sm">
-						    <li ng-repeat="project in projects">
-							    <a ng-click="switchProject(project)">{{project.name}}</a>
-						    </li>
-					    </ul>
-				    </div>
-			    </li>
-			    <li>
-				    <div class="btn-group">
-					    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-						    <span class="clip" style="width:94px;">{{label || '请选择模块' }}</span>
-						    <span class="caret"></span>
-					    </button>
-					    <ul class="dropdown-menu dropdown-menu-sm">
-						    <li ng-repeat="module in modules">
-							    <a ng-click="switchModule(module)">{{module.displayName}}</a>
-						    </li>
-					    </ul>
-				    </div>
-			    </li>
-			    <li>
-				    <button class="btn btn-default" ng-click="upload(gen.name)">上传选中</button>
-			    </li>
-			    <li>
-				    <button class="btn btn-default" ng-click="upload(gen.name, true)">上传全部</button>
-			    </li>
-		    </ul>
-	    </div>
+	    <ul class="nav nav-pills">
+		    <li>
+			    <div class="btn-group">
+				    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					    <span class="clip" style="min-width:94px;">{{projectName || '请选择项目'}}</span>
+					    <span class="caret"></span>
+				    </button>
+				    <ul class="dropdown-menu dropdown-menu-sm">
+					    <li ng-repeat="project in projects">
+						    <a ng-click="switchProject(project)">{{project.name}}</a>
+					    </li>
+				    </ul>
+			    </div>
+		    </li>
+		    <li>
+			    <div class="btn-group">
+				    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					    <span class="clip" style="width:94px;">{{label || '请选择模块' }}</span>
+					    <span class="caret"></span>
+				    </button>
+				    <ul class="dropdown-menu dropdown-menu-sm">
+					    <li ng-repeat="module in modules">
+						    <a ng-click="switchModule(module)">{{module.displayName}}</a>
+					    </li>
+				    </ul>
+			    </div>
+		    </li>
+		    <li>
+			    <button class="btn btn-default" ng-click="upload(gen.name)">上传选中</button>
+		    </li>
+		    <li>
+			    <button class="btn btn-default" ng-click="upload(gen.name, true)">上传全部</button>
+		    </li>
+	    </ul>
 	    <hr>
 
-	    <ul class="nav-pills form-inline">
+	    <ul class="nav nav-pills form-inline">
 		    <li class="form-group">
 			    <label class="control-label" style="width:60px" for=displayName>显示名</label>
 			    <input id=displayName class="form-control" type="text" ng-model="gen.displayName">
@@ -58,22 +54,12 @@ padding:0 10px 10px 0;
 		    </li>
 		    <li>
 			    <label class="control-label" style="width:60px" >模块名</label>
-			    <div class="form-control">{{gen.name | capitalize}}</div>
+			    <div class="form-control" style="width:120px;border-bottom:1px solid #ccc">{{gen.name | capitalize}}</div>
 		    </li>
 		    <li>
 			    <button class="btn btn-primary" ng-click="save(gen)">保存</button>
 		    </li>
 	    </ul>
-
-        <!--<form class="form-horizontal clearfix">-->
-            <!--<div class="form-group">-->
-                <!--<div class="col-xs-offset-1 col-sm-offset-1 col-xs-8 col-sm-8">-->
-                    <!--<button class="btn btn-primary" ng-click="save(gen)">保存</button>-->
-                    <!--<button class="btn btn-danger" ng-click="remove(gen)">删除</button>-->
-                    <!--<button class="btn btn-success pull-right" ng-click="add(gen)">添加</button>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</form>-->
     </header>
     <div ng-if="templates">
         <!-- Nav tabs -->
