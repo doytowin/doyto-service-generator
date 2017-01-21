@@ -7,8 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import org.grs.generator.mapper.ProjectMapper;
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Project;
+import org.grs.generator.model.ProjectService;
 
 /**
  * 项目管理模块基本操作。
@@ -20,11 +21,11 @@ import org.grs.generator.model.Project;
 @RequestMapping("/api/project")
 public class ProjectController extends AbstractController<Project> {
     @Resource
-    private ProjectMapper projectMapper;
+    private ProjectService projectService;
 
     @Override
-    ProjectMapper getIMapper() {
-        return projectMapper;
+    IMapper<Project> getIMapper() {
+        return projectService.getIMapper();
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -52,19 +53,6 @@ public class ProjectController extends AbstractController<Project> {
         if (result.hasErrors()) {
             return result;
         }
-        Project target = projectMapper.get(id);
-        if (target == null) {
-            return null;
-        }
-        //target.setUserId(project.getUserId()); 
-        target.setName(project.getName());
-        target.setPath(project.getPath());
-        target.setJdbcDriver(project.getJdbcDriver());
-        target.setJdbcUrl(project.getJdbcUrl());
-        target.setJdbcUsername(project.getJdbcUsername());
-        target.setJdbcPassword(project.getJdbcPassword());
-
-        projectMapper.update(target);
-        return target;
+        return projectService.update(project);
     }
 }

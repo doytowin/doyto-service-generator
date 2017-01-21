@@ -39,7 +39,7 @@ public class DefaultProjectService extends AbstractService<Project> implements P
     private ModuleService moduleService;
 
     @Override
-    protected IMapper<Project> getIMapper() {
+    public IMapper<Project> getIMapper() {
         return projectMapper;
     }
 

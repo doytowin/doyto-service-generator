@@ -2,6 +2,8 @@ package org.grs.generator.common;
 
 import java.io.Serializable;
 
+import org.grs.generator.component.mybatis.IMapper;
+
 /**
  * ModuleService
  *
@@ -19,4 +21,5 @@ public interface IService<T> {
 
     PageResponse<T> query(T query);
 
+    IMapper<T> getIMapper();
 }

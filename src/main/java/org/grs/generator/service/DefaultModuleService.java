@@ -37,7 +37,7 @@ public class DefaultModuleService extends AbstractService<Module> implements Mod
     private ColumnMapper columnMapper;
 
     @Override
-    protected IMapper<Module> getIMapper() {
+    public IMapper<Module> getIMapper() {
         return moduleMapper;
     }
 
@@ -46,8 +46,8 @@ public class DefaultModuleService extends AbstractService<Module> implements Mod
         return moduleMapper.getWithProjectAndColumns(id);
     }
 
-
     @Override
+    @Transactional
     public Module delete(Serializable id) {
         Module target = moduleMapper.get(id);
         if (target == null) {

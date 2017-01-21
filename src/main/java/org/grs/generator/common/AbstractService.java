@@ -3,16 +3,12 @@ package org.grs.generator.common;
 import java.io.Serializable;
 import java.util.List;
 
-import org.grs.generator.component.mybatis.IMapper;
-
 /**
  * AbstractService
  *
  * @author f0rb on 2017-01-21.
  */
 public abstract class AbstractService<T> implements IService<T> {
-
-    protected abstract IMapper<T> getIMapper();
 
     @Override
     public T get(Serializable id) {

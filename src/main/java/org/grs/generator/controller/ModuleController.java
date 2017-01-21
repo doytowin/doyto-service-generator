@@ -16,10 +16,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import org.grs.generator.mapper.ProjectMapper;
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Module;
 import org.grs.generator.model.ModuleService;
 import org.grs.generator.model.Project;
+import org.grs.generator.model.ProjectService;
 
 /**
  * 模块管理模块基本操作。
@@ -35,11 +36,16 @@ public class ModuleController extends AbstractController<Module> {
     private ModuleService moduleService;
 
     @Resource
-    private ProjectMapper projectMapper;
+    private ProjectService projectService;
+
+    @Override
+    IMapper<Module> getIMapper() {
+        return moduleService.getIMapper();
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public Object query(Module module) {
-        return moduleService.query(module);
+        return doQuery(module);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -48,7 +54,7 @@ public class ModuleController extends AbstractController<Module> {
         if (result.hasErrors()) {
             return result;
         }
-        Project project = projectMapper.get(module.getProjectId());
+        Project project = projectService.get(module.getProjectId());
         if (project == null) {
             FieldError fieldError = new FieldError("Module", "projectId","项目[" + module.getProjectId() + "]不存在!");
             result.addError(fieldError);
