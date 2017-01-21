@@ -28,7 +28,7 @@ import org.grs.generator.model.ModuleService;
 @Service
 public class DefaultModuleService extends AbstractService<Module> implements ModuleService {
 
-    private static final Pattern tablePtn = Pattern.compile("^create\\s+table\\s+(\\w+)\\s?");
+    private static final Pattern tablePtn = Pattern.compile("^create\\s+table\\s+`?(\\w+)`?\\s?");
     @Resource
     private ModuleMapper moduleMapper;
     @Resource
@@ -90,6 +90,12 @@ public class DefaultModuleService extends AbstractService<Module> implements Mod
         if (matcher.find()) {
             tableName = matcher.group(1);
         }
+        return importModule(projectId, tableName, createSql);
+    }
+
+    @Override
+    @Transactional
+    public Module importModule(Integer projectId, String tableName, String createSql) {
         try {
             databaseMapper.createTable(createSql);
 

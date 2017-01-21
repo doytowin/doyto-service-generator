@@ -12,4 +12,6 @@ public interface ModuleService extends IService<Module> {
     Module importModule(Module module);
 
     Module importModule(Integer projectId, String createSql);
+
+    Module importModule(Integer projectId, String table, String createSql);
 }

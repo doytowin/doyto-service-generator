@@ -5,7 +5,7 @@ import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
-import org.grs.generator.test.SpringTest;
+import org.grs.generator.test.SpringUnitTest;
 
 /**
  * ModuleServiceTest
@@ -13,7 +13,7 @@ import org.grs.generator.test.SpringTest;
  * @author f0rb on 2017-01-21.
  */
 @Slf4j
-public class ModuleServiceTest extends SpringTest{
+public class ModuleServiceTest extends SpringUnitTest {
     @Resource
     ModuleService moduleService;
 
