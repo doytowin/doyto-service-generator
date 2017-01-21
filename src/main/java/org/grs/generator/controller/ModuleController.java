@@ -86,6 +86,7 @@ public class ModuleController extends AbstractController<Module> {
                     column.setLabel(column.getField());
                 }
                 columnMapper.saveColumns(list);
+                databaseMapper.dropTable(tableName);
             } catch (Exception e) {
                 log.error("表[" + module.getTableName() + "]不存在", e);
             }
@@ -129,7 +130,7 @@ public class ModuleController extends AbstractController<Module> {
         }
         columnMapper.deleteByTableName(target.getTableName());
         moduleMapper.delete(id);
-        databaseMapper.dropTable(target.getTableName());
+        //databaseMapper.dropTable(target.getTableName());
         return id;
     }
 

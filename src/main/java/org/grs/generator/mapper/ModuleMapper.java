@@ -16,6 +16,13 @@ public interface ModuleMapper extends IMapper<Module> {
     String Table = "gen_module";
 
     @Select(LIST_ + Table + _WHERE_ID)
+    @Results(value = {
+            @Result(column = "projectId", property = "projectId"),
+            @Result(
+                    column = "projectId", property = "project", javaType = Project.class,
+                    one = @One(select = "org.grs.generator.mapper.ProjectMapper.get")
+            )
+    })
     Module get(Serializable id);
 
     @Select(LIST_ + Table + _WHERE_ID)
@@ -31,7 +38,6 @@ public interface ModuleMapper extends IMapper<Module> {
                     many = @Many(select = "org.grs.generator.mapper.ColumnMapper.getByTableName")
             )
     })
-    @Options(useCache = false)
     Module getWithProjectAndColumns(Serializable id);
 
     @Delete(DELETE_ + Table + _WHERE_ID)
