@@ -20,18 +20,11 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://${jdbc.host:localhost}:3306/generator?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+    url: jdbc:mysql://${jdbc.host:localhost}:${jdbc.port:3306}/generator?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
     username: ${jdbc.username:gen_user}
     password: ${jdbc.password:gen_pass}
     hikari:
       jdbc-url: ${spring.datasource.url}
-  jackson:
-    serialization:
-      INDENT_OUTPUT: true
-      FAIL_ON_EMPTY_BEANS: false
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+8
-    default-property-inclusion: non_null
   hazelcast:
     config: hazelcast.xml
 
