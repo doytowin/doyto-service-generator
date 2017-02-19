@@ -9,7 +9,6 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>generator</artifactId>
-    <packaging>war</packaging>
     <name>generator</name>
     <description>代码自动生成工具</description>
     <version>1.0.2</version>
@@ -18,8 +17,8 @@
         <name>Doyto Network, Inc.</name>
         <url>http://doyto.win</url>
     </organization>
-    <properties>
 
+    <properties>
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -118,6 +117,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -171,7 +171,7 @@
         <dependency>
             <groupId>org.mybatis.caches</groupId>
             <artifactId>mybatis-hazelcast</artifactId>
-            <version>1.1.1-SNAPSHOT</version>
+            <version>1.1.2-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.hazelcast</groupId>
@@ -231,11 +231,10 @@
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.4.11</version>
+                <version>0.4.13</version>
                 <configuration>
-                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+                    <imageName>${docker.image.prefix}:${project.artifactId}-${project.version}</imageName>
                     <dockerDirectory>src/main/docker</dockerDirectory>
-                    <exposes>8080</exposes>
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>
