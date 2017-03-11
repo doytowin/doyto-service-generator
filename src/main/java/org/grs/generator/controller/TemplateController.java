@@ -7,8 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import org.grs.generator.mapper.TemplateMapper;
+import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Template;
+import org.grs.generator.service.TemplateService;
 
 /**
  * 模板管理模块基本操作。
@@ -20,11 +21,11 @@ import org.grs.generator.model.Template;
 @RequestMapping("/api/template")
 public class TemplateController extends AbstractController<Template> {
     @Resource
-    private TemplateMapper templateMapper;
+    private TemplateService templateService;
 
     @Override
-    TemplateMapper getIMapper() {
-        return templateMapper;
+    IMapper<Template> getIMapper() {
+        return templateService.getIMapper();
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -52,17 +53,6 @@ public class TemplateController extends AbstractController<Template> {
         if (result.hasErrors()) {
             return result;
         }
-        Template target = templateMapper.get(id);
-        if (target == null) {
-            return null;
-        }
-
-        target.setSuffix(template.getSuffix());
-        target.setPath(template.getPath());
-        target.setCap(template.getCap());
-        target.setContent(template.getContent());
-        target.setValid(template.getValid());
-        templateMapper.update(target);
-        return target;
+        return templateService.update(template);
     }
 }
