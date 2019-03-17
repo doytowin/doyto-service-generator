@@ -14,7 +14,8 @@
 				</ul>
 			</div>
 			<button class="btn btn-default" ng-click="crud.p.reset();crud.project=undefined">重置</button>
-			<button class="btn btn-success pull-right" data-toggle="modal" data-target="#templateAddModal" ng-click="crud.add()">添加模板</button>
+			<button class="btn btn-success pull-right" data-toggle="modal" data-target="#templateAddModal"
+			        ng-click="crud.add();crud.record.project=crud.project">添加模板</button>
 		</form>
 	</header>
 	<section class="table-responsive" style="overflow-y:auto">
@@ -23,8 +24,9 @@
 			<tr>
 				<th>#</th>
 				<th>项目</th>
-				<th>文件保存路径</th>
-				<th>操作</th>
+				<th width="50%">文件保存路径</th>
+				<th width="10%">启用</th>
+				<th width="20%">操作</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -32,6 +34,8 @@
 				<td>{{$index+1}}</td>
 				<td>{{r.project.name}}</td>
 				<td>{{r.project.path + r.path + (r.cap ? ('YourModule') : 'yourModule') + r.suffix}}</td>
+				<td><label><input type="checkbox" ng-init="false" ng-model="r.valid" ng-change="crud.save(r)"></label>
+				</td>
 				<td>
 					<a ng-click="crud.view(r)" data-toggle="modal" data-target="#templateViewModal">查看</a>
 					<a ng-click="crud.edit(r)" data-toggle="modal" data-target="#templateEditModal">修改</a>
@@ -87,8 +91,8 @@
 							<label class="control-label col-xs-3 col-sm-4" for="add-projectId">所属项目</label>
 							<div class="col-xs-9 col-sm-5">
 								<select id="add-projectId" class="form-control" ng-required
-								        ng-model="crud.record.projectId"
-								        ng-options="option.id as option.name for option in projects track by option.id">
+								        ng-model="crud.record.project"
+								        ng-options="option.name for option in projects">
 									<option value="">-- 请选择项目 --</option>
 								</select>
 							</div>
@@ -101,15 +105,15 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="control-label col-xs-3 col-sm-4" for="add-suffix">文件保存后缀</label>
-							<div class="col-xs-9 col-sm-5">
-								<input id="add-suffix" name="suffix" class="form-control" type="text" ng-model="crud.record.suffix" required>
-							</div>
-						</div>
-						<div class="form-group">
 							<label class="control-label col-xs-3 col-sm-4" for="add-path">文件保存路径</label>
 							<div class="col-xs-9 col-sm-5">
 								<input id="add-path" name="path" class="form-control" type="text" ng-model="crud.record.path" required>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-xs-3 col-sm-4" for="add-suffix">文件保存后缀</label>
+							<div class="col-xs-9 col-sm-5">
+								<input id="add-suffix" name="suffix" class="form-control" type="text" ng-model="crud.record.suffix" required>
 							</div>
 						</div>
 						<div class="form-group">
@@ -125,7 +129,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" ng-click="crud.save(crud.record)">添加</button>
+					<button type="button" class="btn btn-primary" ng-click="crud.record.projectId=crud.record.project.id;crud.save(crud.record)">添加</button>
 				</div>
 			</div>
 		</div>

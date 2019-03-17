@@ -11,14 +11,6 @@ factory('Template', ['$resource',
 controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
     function ($scope, Project, Template, $window) {
 
-        Project.query(
-            function (data) {
-                if (data.success) {
-                    $scope.projects = data.result;
-                }
-            }
-        );
-
         $scope.crud = new Crud(Template, function (data) {
             if (data.success) {
                 $scope.crud.p.load();
@@ -27,6 +19,26 @@ controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
                 $scope.errors = Util.handleFailure(data);
             }
         });
+
+        Project.query(
+            function (data) {
+                if (data.success) {
+                    $scope.projects = data.result;
+                    console.log($scope.projects);
+                    if (localStorage.projectId) {
+                        for (var i = 0; i < $scope.projects.length; i++) {
+                            var p = $scope.projects[i];
+                            if (p.id == localStorage.projectId) {
+                                $scope.crud.project = p;
+                                $scope.crud.p.q.projectId = p.id;
+                                $scope.crud.p.load(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        );
 
         $scope.crud.add = function () {
             this.record = {cap:true};

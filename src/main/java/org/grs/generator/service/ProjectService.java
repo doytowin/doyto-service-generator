@@ -1,6 +1,7 @@
-package org.grs.generator.model;
+package org.grs.generator.service;
 
 import org.grs.generator.common.IService;
+import org.grs.generator.model.Project;
 
 /**
  * ModuleService
@@ -9,6 +10,6 @@ import org.grs.generator.common.IService;
  */
 public interface ProjectService extends IService<Project> {
 
-    Project importDatabase(Integer projectId);
+    void importDatabase(Integer projectId);
 
 }

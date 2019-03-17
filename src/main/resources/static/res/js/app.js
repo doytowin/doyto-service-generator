@@ -36,13 +36,6 @@ factory('Module', ['$resource',
 ).
 controller('ModuleCtrl', ['$scope','Project','Module','Column',
     function ($scope, Project, Module, Column) {
-        Project.query(
-            function (data) {
-                if (data.success) {
-                    $scope.projects = data.result;
-                }
-            }
-        );
         $scope.crud = new Crud(Module, function (data) {
             if (data.success) {
                 $scope.crud.p.load();
@@ -51,6 +44,24 @@ controller('ModuleCtrl', ['$scope','Project','Module','Column',
                 Util.handleFailure(data);
             }
         });
+        Project.query(
+            function (data) {
+                if (data.success) {
+                    $scope.projects = data.result;
+                    if (localStorage.projectId) {
+                        for (var i = 0; i < $scope.projects.length; i++) {
+                            var p = $scope.projects[i];
+                            if (p.id == localStorage.projectId) {
+                                $scope.crud.project = p;
+                                $scope.crud.p.q.projectId = p.id;
+                                $scope.crud.p.load(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        );
         $scope.sqlResolved = false;
         $scope.resolveSql = function(record) {
             if (/^create\s+table\s+(\w+)\s?/gi.test(record.createSql)) {
@@ -70,7 +81,7 @@ controller('ModuleCtrl', ['$scope','Project','Module','Column',
         };
 
         $scope.editLabels = function(record) {
-            Column.query({tableName:record.tableName}, function (data) {
+            Column.query({tableName:record.tableName, projectId:record.projectId}, function (data) {
                 if (data.success) {
                     record.columns = data.result;
                     $scope.crud.record = record;
@@ -129,14 +140,6 @@ factory('Template', ['$resource',
 controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
     function ($scope, Project, Template, $window) {
 
-        Project.query(
-            function (data) {
-                if (data.success) {
-                    $scope.projects = data.result;
-                }
-            }
-        );
-
         $scope.crud = new Crud(Template, function (data) {
             if (data.success) {
                 $scope.crud.p.load();
@@ -145,6 +148,26 @@ controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
                 $scope.errors = Util.handleFailure(data);
             }
         });
+
+        Project.query(
+            function (data) {
+                if (data.success) {
+                    $scope.projects = data.result;
+                    console.log($scope.projects);
+                    if (localStorage.projectId) {
+                        for (var i = 0; i < $scope.projects.length; i++) {
+                            var p = $scope.projects[i];
+                            if (p.id == localStorage.projectId) {
+                                $scope.crud.project = p;
+                                $scope.crud.p.q.projectId = p.id;
+                                $scope.crud.p.load(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        );
 
         $scope.crud.add = function () {
             this.record = {cap:true};
@@ -487,7 +510,23 @@ config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRo
 }]).
 config(['$resourceProvider', function ($resourceProvider) {
     $resourceProvider.defaults.actions.query.isArray = false;
-}]);
+}]).
+// register the interceptor as a service
+factory('fastjsonInterceptor', [function () {
+    return {
+        'response': function (_response) {
+            if (_response.data && typeof _response.data === 'object') {
+                // var str = JSON.stringify(_response.data);
+                restore$ref(_response.data);
+                // _response.data._str = str;
+            }
+            return _response;
+        }
+    };
+}])
+.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push('fastjsonInterceptor');
+}])
 
 "use strict";
 
@@ -553,7 +592,44 @@ filter('camelize', function() {
         }
         return ret;
     };
-});
+}).
+filter('pluralize', function() {
+
+    function pluralize(noun) {
+        if (typeof noun !== 'string') { return noun; }
+
+        var rules = [
+            {regex: /octopus/gi, suffix: 'octopuses'},
+            {regex: /person/gi, suffix: 'people'},
+            {regex: /ox/gi, suffix: 'oxen'},
+            {regex: /goose/gi, suffix: 'geese'},
+            {regex: /mouse/gi, suffix: 'mice'},
+            {regex: /bison|buffalo|deer|duck|fish|moose|pike|plankton|salmon|sheep|squid|swine|trout|sheap|equipment|information|rice|money|species|series|news/i, suffix: '$&'}, // bison -> bison
+            {regex: /(x|ch|ss|sh)$/gi, suffix: '$1es'}, // dish -> dishes, kiss -> kisses
+            {regex: /(hetero|canto|photo|zero|piano|pro|kimono|portico|quarto)$/gi, suffix: '$1s'}, // kimono -> kimonos
+            {regex: /(?:([^f])fe|([lr])f)$/, suffix: '$1$2ves'}, // knife -> knives, calf -> calves
+            {regex: /o$/gi, suffix: 'oes'}, // hero -> heroes
+            {regex: /([^aeiouy]|qu)y$/gi, suffix: '$1ies'}, // cherry -> cherries
+            {regex: /s$/gi, suffix: 's'}, // cats -> cats
+            {regex: /$/gi, suffix: 's'} // cat -> cats
+        ];
+
+        for (var i = 0; i < rules.length; i++) {
+            var rule = rules[i];
+            if (noun.match(rule.regex)) {
+                noun = noun.replace(rule.regex, rule.suffix);
+                break;
+            }
+        }
+
+        return noun;
+    }
+
+    return function(input) {
+        // if null or undefined pass it through
+        return !input ? input : pluralize(input);
+    };
+})
 "use strict";
 
 /* global genApp */
@@ -587,13 +663,25 @@ run(['$rootScope', '$http', function ($rootScope, $http) {
 /*global genApp, angular, Util*/
 
 genApp.
-controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
-    function ($scope, Project, Module, Template) {
+controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 'Template',
+    function ($scope, $timeout, $log, Project, Module, Template) {
+        $scope.data = {};
         Project.query(
             function (data) {
                 if (data.success) {
                     $scope.projects = data.result;
-                    $scope.switchProject($scope.projects[0]);
+
+                    var defaultProject = $scope.projects[0];
+                    if (localStorage.projectId) {
+                        for (var i = 0; i < $scope.projects.length; i++) {
+                            var project = $scope.projects[i];
+                            if (project.id == localStorage.projectId) {
+                                defaultProject = project;
+                                break;
+                            }
+                        }
+                    }
+                    $scope.switchProject(defaultProject);
                 }
             }
         );
@@ -610,9 +698,14 @@ controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
         //切换项目后需要切换该项目所配置的模板和模块
         $scope.switchProject = function (record) {
             record = record || {};
+            $scope.currentProject = record;
+            localStorage.projectId = record.id;
 
             Template.query(
-                {projectId: record.id},
+                {
+                    projectId: record.id,
+                    valid: true
+                },
                 function (data) {
                     if (data.success) {
                         $scope.templates = data.result;
@@ -621,7 +714,10 @@ controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
             );
 
             Module.query(
-                {projectId: record.id},
+                {
+                    projectId: record.id,
+                    valid: true
+                },
                 function (data) {
                     $scope.project = angular.copy(record);
                     $scope.projectName = record.name;
@@ -633,15 +729,25 @@ controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
             );
         };
 
-        $scope.switchModule = function (record) {
+        $scope.switchModule = function (record, records, index) {
             record = record || {};
             $scope.gen = angular.copy(record);
-            $scope.label = record.displayName;
+            $scope.label = record.displayName || record.name;
+            $scope.data.labelFilter = record.displayName || record.name;
             if (record.columns) {
                 $scope.columns = record.columns;
                 $scope.imports = record.imports;
+                if (angular.isArray(records) && index < records.length) {
+                    $timeout(function () {
+                        $scope.upload(record.name, true);
+                        $scope.switchModule(records[index], records, index + 1);
+                    }, 50)
+                }
             } else {
-                Module.table({table: record.tableName || record.name}, function (data) {
+                Module.table({
+                    table: record.tableName || record.name,
+                    projectId: record.projectId
+                }, function (data) {
                     if (data.success) {
                         var columns = data.result, imports = [];
                         for (var i = 0; i < columns.length; i++) {
@@ -652,15 +758,25 @@ controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
                             } else if (column.type.startsWith('int')) {
                                 column.type = 'Integer';
                                 column.jdbcType = 'INTEGER';
+                            } else if (column.type.startsWith('bigint')) {
+                                column.type = 'Long';
+                                column.jdbcType = 'LONG';
                             } else if (column.type.startsWith('smallint')) {
                                 column.type = 'Short';
                                 column.jdbcType = 'INTEGER';
-                            } else if (column.type.startsWith('tinyint')) {
+                            } else if (column.type.startsWith('tinyint(1)') || column.type == 'bit(1)' ) {
                                 column.type = 'Boolean';
+                                column.jdbcType = 'BIT';
+                            } else if (column.type.startsWith('tinyint')) {
+                                column.type = 'Byte';
                                 column.jdbcType = 'BIT';
                             } else if (column.type.startsWith('timestamp') || column.type.startsWith('datetime')) {
                                 column.type = 'Date';
                                 column.jdbcType = 'TIMESTAMP';
+                                imports.indexOf('java.util.Date') < 0 && imports.push('java.util.Date');
+                            } else if (column.type.startsWith('date')) {
+                                column.type = 'Date';
+                                column.jdbcType = 'Date';
                                 imports.indexOf('java.util.Date') < 0 && imports.push('java.util.Date');
                             } else {
                                 column.type = 'String';
@@ -669,6 +785,13 @@ controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
                         }
                         $scope.columns = record.columns = columns;
                         $scope.imports = record.imports = imports;
+
+                        if (angular.isArray(records) && index < records.length) {
+                            $timeout(function () {
+                                $scope.upload(record.name, true);
+                                $scope.switchModule(records[index], records, index + 1);
+                            }, 50)//等待数据上传完毕
+                        }
                     }
                 });
             }
@@ -687,6 +810,38 @@ controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
             Module.remove({id: gen.id}, onSuccess);
         };
 
+        function saveAs(path, content) {
+            var file = new File([content], path, {type: "text/plain;charset=utf-8"});
+            file.open("w"); // open file with write access
+            file.writeln('');
+            file.close();
+        }
+        function errorHandler(e) {
+            // var msg = '';
+            //
+            // switch (e.code) {
+            //     case FileError.QUOTA_EXCEEDED_ERR:
+            //         msg = 'QUOTA_EXCEEDED_ERR';
+            //         break;
+            //     case FileError.NOT_FOUND_ERR:
+            //         msg = 'NOT_FOUND_ERR';
+            //         break;
+            //     case FileError.SECURITY_ERR:
+            //         msg = 'SECURITY_ERR';
+            //         break;
+            //     case FileError.INVALID_MODIFICATION_ERR:
+            //         msg = 'INVALID_MODIFICATION_ERR';
+            //         break;
+            //     case FileError.INVALID_STATE_ERR:
+            //         msg = 'INVALID_STATE_ERR';
+            //         break;
+            //     default:
+            //         msg = 'Unknown Error';
+            //         break;
+            // };
+
+            console.log('Error: ' + e.message);
+        }
         $scope.upload = function (name, all) {
             var arr = [];
             var templates = $scope.templates;
@@ -699,6 +854,41 @@ controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
                 d.path = o.path + prefix + o.suffix;
                 d.key = o.suffix;
                 arr.push(d);
+
+                // window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
+                //
+                // navigator.webkitPersistentStorage.requestQuota(1024*1024,
+                //     function(grantedBytes) {
+                //         window.requestFileSystem(window.PERSISTENT, grantedBytes, function (fs) {
+                //             fs.root.getFile("requestFileSystem_test.txt", {
+                //             // fs.root.getFile($scope.currentProject.path + d.path, {
+                //                 create: true
+                //             }, function (fileEntry) {
+                //
+                //                 // Create a FileWriter object for our FileEntry (log.txt).
+                //                 fileEntry.createWriter(function (fileWriter) {
+                //
+                //                     fileWriter.onwriteend = function (e) {
+                //                         console.log('Write completed.');
+                //                     };
+                //
+                //                     fileWriter.onerror = function (e) {
+                //                         console.log('Write failed: ' + e.toString());
+                //                     };
+                //
+                //                     // Create a new Blob and write it to log.txt.
+                //                     var blob = new Blob([d.text], {type: 'text/plain'});
+                //
+                //                     fileWriter.write(blob);
+                //
+                //                 }, errorHandler)
+                //             }, errorHandler)
+                //         }, errorHandler)
+                //     },
+                //     function(errorCode) {
+                //         alert("Storage not granted.");
+                //     }
+                // );
             }
             if (!arr.length) {
                 alert('请选择需要上传的文件!');
@@ -707,5 +897,95 @@ controller('GeneratorCtrl', ['$scope', 'Project', 'Module', 'Template',
             Module.upload({id : name}, {root: $scope.project.path, data:arr}, onSuccess);
         };
 
+        $scope.uploadAll = function () {
+            $scope.switchModule($scope.modules[0], $scope.modules, 1);
+        };
+
     }]
 );
+/*!
+ * restore$ref.js v1.0.0
+ *
+ * 还原fastjson的循环引用检测替换掉的$ref对象
+ *
+ */
+var restore$ref = function () {
+    function resolvePath(root, expression) {
+        var refs = expression.split(/[\.\[\]]+/);
+        var resolved = root;
+        for (var i = 1, j = refs.length; i < j; ++i) {
+            var ref = refs[i];
+            if (ref !== '') {
+                if (isNaN(ref)) {
+                    resolved = resolved[ref];
+                } else {
+                    resolved = resolved[parseInt(ref)];
+                }
+            }
+        }
+        return resolved;
+    }
+
+    /**
+     * {"$ref":"$"}         引用根对象
+     * {"$ref":"@"}         引用自己
+     * {"$ref":".."}        引用父对象
+     * {"$ref":"../.."}     引用父对象的父对象
+     * {"$ref":"$.members[0].reportTo"}    基于路径的引用
+     */
+    function resolve$ref(root, ancient, key) {
+        var parent = ancient.node;
+        var $ref = parent[key].$ref;
+        if ($ref.substring(0, 1) == "$") {
+            parent[key] = resolvePath(root, $ref);
+        } else if ($ref == "@") {
+            parent[key] = ancient.node;
+        } else if ($ref.substring(0, 2) == "..") {
+            var len = $ref.split(/[\/]+/).length;
+            while (len-- > 0) {
+                ancient = ancient.parent;
+            }
+            parent[key] = ancient.node;
+        } else {
+            console.log("无法识别的$ref:" + $ref);
+        }
+    }
+
+    /**
+     * 递归解析JSON
+     *
+     * @param root      原始的JSON对象
+     * @param ancient   ancient.node为父节点, 用于索引祖先
+     * @param key       ancient.node[key]是当前需要解析的节点
+     */
+    function resolveObject(root, ancient, key) {
+        var current = ancient ? ancient.node[key] : root;
+        if (current !== null && typeof current === "object") {
+            if (Array.isArray(current)) {
+                for (var i = 0; i < current.length; i++) {
+                    resolveObject(root, {
+                        parent: ancient,
+                        node: current
+                    }, i);
+                }
+            } else {
+                if (current.$ref) {
+                    resolve$ref(root, ancient, key);//处理$ref
+                } else {
+                    for (var p in current) {
+                        if (current.hasOwnProperty(p)) {
+                            resolveObject(root, {
+                                parent: ancient,
+                                node: current
+                            }, p)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return function () {
+        resolveObject(arguments[0]);
+    };
+}();

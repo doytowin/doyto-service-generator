@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 import org.grs.generator.common.AbstractService;
 import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.mapper.ProjectMapper;
-import org.grs.generator.model.ModuleService;
 import org.grs.generator.model.Project;
-import org.grs.generator.model.ProjectService;
 
 /**
  * DefaultModulService
@@ -61,7 +59,8 @@ public class DefaultProjectService extends AbstractService<Project> implements P
         return target;
     }
 
-    public Project importDatabase(Integer projectId) {
+    @Override
+    public void importDatabase(Integer projectId) {
         //建立数据库连接
         //SHOW TABLES ;
         //SHOW CREATE TABLE Nile;
@@ -83,7 +82,7 @@ public class DefaultProjectService extends AbstractService<Project> implements P
                     //查询数据库的所有表对应的建表SQL
                     Map<String, String> tableSqlMap = new HashMap<>();
                     for (String table : tables) {
-                        run.query(conn, "SHOW CREATE TABLE " + table, resultSet -> {
+                        run.query(conn, "SHOW CREATE TABLE `" + table + "`", resultSet -> {
                             if (resultSet.next()) {
                                 tableSqlMap.put(table, resultSet.getString(2));
                             }
@@ -100,9 +99,8 @@ public class DefaultProjectService extends AbstractService<Project> implements P
                     DbUtils.close(conn);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                log.error("建表出错!", e);
             }
         }
-        return null;
     }
 }

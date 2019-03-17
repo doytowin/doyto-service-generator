@@ -14,13 +14,6 @@ factory('Module', ['$resource',
 ).
 controller('ModuleCtrl', ['$scope','Project','Module','Column',
     function ($scope, Project, Module, Column) {
-        Project.query(
-            function (data) {
-                if (data.success) {
-                    $scope.projects = data.result;
-                }
-            }
-        );
         $scope.crud = new Crud(Module, function (data) {
             if (data.success) {
                 $scope.crud.p.load();
@@ -29,6 +22,24 @@ controller('ModuleCtrl', ['$scope','Project','Module','Column',
                 Util.handleFailure(data);
             }
         });
+        Project.query(
+            function (data) {
+                if (data.success) {
+                    $scope.projects = data.result;
+                    if (localStorage.projectId) {
+                        for (var i = 0; i < $scope.projects.length; i++) {
+                            var p = $scope.projects[i];
+                            if (p.id == localStorage.projectId) {
+                                $scope.crud.project = p;
+                                $scope.crud.p.q.projectId = p.id;
+                                $scope.crud.p.load(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        );
         $scope.sqlResolved = false;
         $scope.resolveSql = function(record) {
             if (/^create\s+table\s+(\w+)\s?/gi.test(record.createSql)) {
@@ -48,7 +59,7 @@ controller('ModuleCtrl', ['$scope','Project','Module','Column',
         };
 
         $scope.editLabels = function(record) {
-            Column.query({tableName:record.tableName}, function (data) {
+            Column.query({tableName:record.tableName, projectId:record.projectId}, function (data) {
                 if (data.success) {
                     record.columns = data.result;
                     $scope.crud.record = record;

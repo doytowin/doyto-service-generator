@@ -12,7 +12,7 @@ import org.grs.generator.model.Template;
 
 @Mapper
 //@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
-@CacheNamespace(implementation = org.mybatis.caches.hazelcast.LoggingHazelcastCache.class)
+//@CacheNamespace(implementation = org.mybatis.caches.hazelcast.LoggingHazelcastCache.class)
 public interface TemplateMapper extends IMapper<Template> {
     String Table = "gen_template";
 
@@ -77,6 +77,9 @@ public interface TemplateMapper extends IMapper<Template> {
                     FROM(Table + " t");
                     if (record.getProjectId() != null) {
                         WHERE("projectId = #{projectId}");
+                    }
+                    if (record.getValid() != null) {
+                        WHERE("valid = #{valid}");
                     }
                     ORDER_BY("t.projectId");
                 }

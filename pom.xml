@@ -2,12 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.2.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+    <groupId>win.doyto</groupId>
     <artifactId>generator</artifactId>
     <name>generator</name>
     <description>代码自动生成工具</description>
@@ -31,11 +26,18 @@
 
         <main.basedir>${basedir}/../..</main.basedir>
 
-        <docker.image.prefix>doyto</docker.image.prefix>
+        <docker.plugin.version>1.1.1</docker.plugin.version>
+        <docker.image.prefix>docker.doyto.win</docker.image.prefix>
+        <docker.image.base>openjdk:8u121-jre-alpine</docker.image.base>
+        <docker.image.push>false</docker.image.push>
+        <docker.expose>0</docker.expose>
 
-        <mysql.version>5.1.35</mysql.version>
+        <spring-boot.version>1.5.13.RELEASE</spring-boot.version>
+        <spring-loaded.version>1.2.8.RELEASE</spring-loaded.version>
+
+        <mysql.version>8.0.12</mysql.version>
         <hikaricp.version>2.4.7</hikaricp.version>
-        <hazelcast.version>3.6.4</hazelcast.version>
+        <hazelcast.version>3.8.4</hazelcast.version>
         <angular.version>1.5.7</angular.version>
         <lombok.version>1.16.10</lombok.version>
     </properties>
@@ -142,12 +144,13 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.4.1</version>
+            <version>3.4.5</version>
         </dependency>
 
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -168,23 +171,23 @@
             <artifactId>jstl</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.mybatis.caches</groupId>
             <artifactId>mybatis-hazelcast</artifactId>
-            <version>1.1.2-SNAPSHOT</version>
+            <version>1.1.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.hazelcast</groupId>
                     <artifactId>hazelcast-spring</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
         <!-- hazelcast-spring -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-spring</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!-- 数据库连接池 -->
         <dependency>
@@ -195,9 +198,21 @@
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <finalName>${project.artifactId}##${project.version}</finalName>
@@ -205,16 +220,24 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<configuration>
-                    <finalName>${project.artifactId}##${project.version}</finalName>
-                </configuration>-->
+                <version>${spring-boot.version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.springframework</groupId>
                         <artifactId>springloaded</artifactId>
-                        <version>1.2.6.RELEASE</version>
+                        <version>${spring-loaded.version}</version>
                     </dependency>
                 </dependencies>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>${start-class}</mainClass>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -231,10 +254,34 @@
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.4.13</version>
+                <version>${docker.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <imageName>${docker.image.prefix}:${project.artifactId}-${project.version}</imageName>
-                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <maintainer>wechat@d1m.cn</maintainer>
+                    <pushImage>${docker.image.push}</pushImage>
+                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+                    <baseImage>${docker.image.base}</baseImage>
+                    <imageTags>
+                        <imageTag>${project.version}</imageTag>
+                        <imageTag>latest</imageTag>
+                    </imageTags>
+                    <exposes>
+                        <expose>${docker.expose}</expose>
+                    </exposes>
+                    <volumes>
+                        <volume>/tmp</volume>
+                    </volumes>
+                    <env>
+                        <JAVA_OPTS>""</JAVA_OPTS>
+                    </env>
+                    <entryPoint>[ "sh", "-c", "java -Duser.timezone=GMT+08 $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /${project.build.finalName}.jar"]</entryPoint>
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>

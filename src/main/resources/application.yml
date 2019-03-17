@@ -15,12 +15,14 @@ spring:
   resources:
     chain:
       enabled: true
+      html-application-cache: false
+      cache: false
   application:
     name: generator
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://${jdbc.host:localhost}:${jdbc.port:3306}/generator?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+    url: jdbc:mysql://${jdbc.host:localhost}:${jdbc.port:3306}/generator?autoReconnect=true&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=CONVERT_TO_NULL&allowMultiQueries=true&useSSL=false
     username: ${jdbc.username:gen_user}
     password: ${jdbc.password:gen_pass}
     hikari:

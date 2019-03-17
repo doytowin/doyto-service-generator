@@ -24,6 +24,8 @@ public class Project extends PageableModel<Project> {
 
     private String jdbcPassword;
 
+    private String tablePrefix;
+
     private Date createTime;
 
 }

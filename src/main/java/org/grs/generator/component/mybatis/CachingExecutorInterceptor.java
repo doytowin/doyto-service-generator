@@ -24,13 +24,15 @@ import org.apache.ibatis.session.RowBounds;
 public class CachingExecutorInterceptor implements Interceptor {
     public Object removeCacheEntry(Configuration configuration, String cacheId, String mappingName, Object parameterObject) {
         Object removedObject = null;
-        Cache cache = configuration.getCache(cacheId);;
-        if (cache != null) {
+        try {
+            Cache cache = configuration.getCache(cacheId);
             CacheKey cacheKey = getCacheKey(configuration, mappingName, parameterObject);
             if (cacheKey != null) {
                 removedObject = cache.removeObject(cacheKey);
                 log.info("Remove from cache: {} by key {}", removedObject, cacheKey);
             }
+        } catch (Exception e) {
+            log.warn("{}", e.getMessage());
         }
         return removedObject;
     }

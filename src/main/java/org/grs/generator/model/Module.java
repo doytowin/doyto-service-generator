@@ -29,6 +29,8 @@ public class Module extends PageableModel<Module> {
     //update时不需要对createSql判空@NotNull(message = "建表sql不能为空")
     private String createSql;
 
+    private Boolean valid;
+
     //返回字段
     private Project project;
 

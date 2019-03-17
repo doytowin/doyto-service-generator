@@ -14,7 +14,7 @@ CREATE TABLE generator.gen_user
     createTime   TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     valid        BOOLEAN                                      DEFAULT TRUE,
     createUserId INT(11),
-    rank         SMALLINT(6) DEFAULT '32767'         NOT NULL
+    `rank`       SMALLINT(6) DEFAULT 32767           NOT NULL
 );
 CREATE UNIQUE INDEX email
     ON gen_user (email);

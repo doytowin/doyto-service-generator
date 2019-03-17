@@ -3,7 +3,9 @@ package org.grs.generator.model;
 import javax.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
+import org.grs.generator.service.ProjectService;
 import org.junit.Test;
+import org.springframework.test.annotation.Commit;
 
 import org.grs.generator.test.SpringUnitTest;
 
@@ -18,6 +20,7 @@ public class ProjectServiceTest extends SpringUnitTest {
     ProjectService projectService;
 
     @Test
+    @Commit
     public void importAll() throws Exception {
         projectService.importDatabase(1);
     }

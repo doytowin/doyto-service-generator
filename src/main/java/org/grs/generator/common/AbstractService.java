@@ -31,6 +31,7 @@ public abstract class AbstractService<T> implements IService<T> {
         return insert;
     }
 
+    @Override
     public PageResponse<T> query(T query) {
         List<T> columnList = getIMapper().query(query);
         long total = getIMapper().count(query);

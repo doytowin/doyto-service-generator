@@ -10,7 +10,7 @@ import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Project;
 
 @Mapper
-@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
+//@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ProjectMapper extends IMapper<Project> {
     String Table = "gen_project";
 
@@ -23,9 +23,9 @@ public interface ProjectMapper extends IMapper<Project> {
     @Insert({
             "insert into",
             Table,
-            "(`userId`,`name`,`path`,`jdbcDriver`,`jdbcUrl`,`jdbcUsername`,`jdbcPassword`)",
+            "(`userId`,`name`,`path`,`jdbcDriver`,`jdbcUrl`,`jdbcUsername`,`jdbcPassword`,`tablePrefix`)",
             "values",
-            "(#{userId},#{name},#{path},#{jdbcDriver},#{jdbcUrl},#{jdbcUsername},#{jdbcPassword})"
+            "(#{userId},#{name},#{path},#{jdbcDriver},#{jdbcUrl},#{jdbcUsername},#{jdbcPassword},#{tablePrefix})"
     })
     int insert(Project record);
 
@@ -91,6 +91,9 @@ public interface ProjectMapper extends IMapper<Project> {
                 }
                 if (record.getJdbcPassword() != null) {
                     SET("`jdbcPassword` = #{jdbcPassword,jdbcType=VARCHAR}");
+                }
+                if (record.getTablePrefix() != null) {
+                    SET("`tablePrefix` = #{tablePrefix,jdbcType=VARCHAR}");
                 }
                 WHERE("id = #{id,jdbcType=INTEGER}");
             }}.toString();

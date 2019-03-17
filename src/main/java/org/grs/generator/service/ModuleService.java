@@ -1,6 +1,8 @@
-package org.grs.generator.model;
+package org.grs.generator.service;
 
 import org.grs.generator.common.IService;
+import org.grs.generator.model.Module;
+import org.grs.generator.model.Project;
 
 /**
  * ModuleService
@@ -14,4 +16,6 @@ public interface ModuleService extends IService<Module> {
     Module importModule(Integer projectId, String createSql);
 
     Module importModule(Integer projectId, String table, String createSql);
+
+    Module importModule(Project project, String table, String createSql);
 }

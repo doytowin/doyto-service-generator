@@ -11,7 +11,7 @@ import org.grs.generator.model.Module;
 import org.grs.generator.model.Project;
 
 @Mapper
-@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
+//@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ModuleMapper extends IMapper<Module> {
     String Table = "gen_module";
 
@@ -51,7 +51,7 @@ public interface ModuleMapper extends IMapper<Module> {
             "values",
             "(#{projectId},#{name},#{displayName},#{modelName},#{fullName},#{tableName})"
     })
-    @Options(flushCache = Options.FlushCachePolicy.FALSE)
+    @Options(useGeneratedKeys = true, flushCache = Options.FlushCachePolicy.FALSE)
     int insert(Module record);
 
     @UpdateProvider(type = ModuleSqlProvider.class, method = "update")
@@ -98,6 +98,9 @@ public interface ModuleMapper extends IMapper<Module> {
                     if (record.getProjectId() != null) {
                         WHERE("projectId = #{projectId}");
                     }
+                    if (record.getValid() != null) {
+                        WHERE("valid = #{valid}");
+                    }
                     if (select) {
                         ORDER_BY("t.id desc");
                     }
@@ -134,6 +137,9 @@ public interface ModuleMapper extends IMapper<Module> {
                     }
                     if (record.getTableName() != null) {
                         SET("`tableName` = #{tableName,jdbcType=VARCHAR}");
+                    }
+                    if (record.getValid() != null) {
+                        SET("`valid` = #{valid,jdbcType=BIT}");
                     }
                     WHERE("id = #{id,jdbcType=INTEGER}");
                 }

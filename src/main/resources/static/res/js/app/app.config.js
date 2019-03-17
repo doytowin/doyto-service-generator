@@ -55,4 +55,20 @@ config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRo
 }]).
 config(['$resourceProvider', function ($resourceProvider) {
     $resourceProvider.defaults.actions.query.isArray = false;
-}]);
+}]).
+// register the interceptor as a service
+factory('fastjsonInterceptor', [function () {
+    return {
+        'response': function (_response) {
+            if (_response.data && typeof _response.data === 'object') {
+                // var str = JSON.stringify(_response.data);
+                restore$ref(_response.data);
+                // _response.data._str = str;
+            }
+            return _response;
+        }
+    };
+}])
+.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push('fastjsonInterceptor');
+}])

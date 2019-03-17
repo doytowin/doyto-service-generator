@@ -10,6 +10,8 @@ public class Column extends PageableModel<Column> {
 
     private Integer id;
 
+    private Integer projectId;
+
     private String tableName;
 
     private String field;
@@ -22,9 +24,12 @@ public class Column extends PageableModel<Column> {
 
     private String key;
 
+    private String comment;
+
+    private Boolean valid;
+
     public void setNull(String s) {
         nullable = "YES".equals(s);
-        //System.out.println("setNull " + s);
     }
 
 }

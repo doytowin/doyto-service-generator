@@ -3,10 +3,7 @@ package org.grs.generator.controller;
 import javax.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.grs.generator.mapper.ColumnMapper;
 
@@ -31,7 +28,7 @@ public class TableController {
      * @return 表列
      */
     @RequestMapping(value = "{table}", method = RequestMethod.GET)
-    public Object tableColumn(@PathVariable("table") String table) {
-        return columnMapper.getByTableName(table);
+    public Object tableColumn(@PathVariable("table") String table, @RequestParam Integer projectId) {
+        return columnMapper.getByTableName(projectId, table);
     }
 }

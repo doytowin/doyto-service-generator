@@ -10,13 +10,13 @@ import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Column;
 
 @Mapper
-@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
+//@CacheNamespace(implementation = org.mybatis.caches.hazelcast.HazelcastCache.class)
 public interface ColumnMapper extends IMapper<Column> {
     String Table = "gen_column";
 
     /*i________________________________________________i*/
-    @Select(LIST_ + Table + " WHERE tableName = #{tableName}")
-    List<Column> getByTableName(String tableName);
+    @Select(LIST_ + Table + " WHERE projectId = #{projectId} and binary tableName = #{tableName}")
+    List<Column> getByTableName(@Param("projectId") Integer projectId, @Param("tableName") String tableName);
 
     @Delete(DELETE_ + Table + " WHERE tableName = #{tableName}")
     void deleteByTableName(String tableName);
@@ -36,12 +36,12 @@ public interface ColumnMapper extends IMapper<Column> {
 
     @Insert({
             "<script>",
-            "insert into",
+            "insert ignore into",
             Table,
-            "(`id`,`tableName`,`field`,`label`,`type`,`nullable`,`key`)",
+            "(`id`,`tableName`,`field`,`label`,`type`,`nullable`,`key`,`projectId`,`comment`,`valid`)",
             "values",
             "<foreach collection='list' item='col' index='index' separator=','>",
-            "(#{col.id},#{col.tableName},#{col.field},#{col.label},#{col.type},#{col.nullable},#{col.key})",
+            "(#{col.id},#{col.tableName},#{col.field},#{col.label},#{col.type},#{col.nullable},#{col.key},#{col.projectId},#{col.comment},#{col.valid})",
             "</foreach>",
             "ON DUPLICATE KEY UPDATE",
             "label = VALUES(label)",
@@ -60,9 +60,9 @@ public interface ColumnMapper extends IMapper<Column> {
     @Insert({
             "insert into",
             Table,
-            "(`tableName`,`field`,`label`,`type`,`nullable`,`key`)",
+            "(`tableName`,`field`,`label`,`type`,`nullable`,`key`,`projectId`)",
             "values",
-            "(#{tableName},#{field},#{label},#{type},#{nullable},#{key})"
+            "(#{tableName},#{field},#{label},#{type},#{nullable},#{key},#{projectId})"
     })
     int insert(Column record);
 
@@ -93,6 +93,12 @@ public interface ColumnMapper extends IMapper<Column> {
                 FROM(Table);
                 if (record.getTableName() != null) {
                     WHERE("tableName = #{tableName}");
+                }
+                if (record.getProjectId() != null) {
+                    WHERE("projectId = #{projectId}");
+                }
+                if (record.getValid() != null) {
+                    WHERE("valid = #{valid}");
                 }
             }}.toString() + (query && record.needPaging() ? _LIMIT_OFFSET : "");
         }
@@ -125,6 +131,9 @@ public interface ColumnMapper extends IMapper<Column> {
                 }
                 if (record.getKey() != null) {
                     SET("`key` = #{key,jdbcType=VARCHAR}");
+                }
+                if (record.getValid() != null) {
+                    SET("`valid` = #{valid,jdbcType=BIT}");
                 }
                 WHERE("id = #{id,jdbcType=INTEGER}");
             }}.toString();

@@ -19,13 +19,18 @@
 		    </li>
 		    <li>
 			    <div class="btn-group">
-				    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				    <!--<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 					    <span class="clip" style="width:94px;">{{label || '请选择模块' }}</span>
 					    <span class="caret"></span>
-				    </button>
+				    </button>-->
+				    <!--ng-blur="data.labelFilter = data.labelFilter || label"-->
+
+				    <input class="form-control dropdown-toggle" data-toggle="dropdown"
+				           ng-focus="data.labelFilter = ''"
+				           ng-model="data.labelFilter" placeholder="{{label || '请选择模块'}}"/>
 				    <ul class="dropdown-menu dropdown-menu-sm">
-					    <li ng-repeat="module in modules">
-						    <a ng-click="switchModule(module)">{{module.displayName}}</a>
+					    <li ng-repeat="module in modules" ng-if="(module.displayName || module.name).startsWith(data.labelFilter)">
+						    <a ng-click="switchModule(module)">{{module.displayName || module.name}}</a>
 					    </li>
 				    </ul>
 			    </div>
@@ -35,6 +40,9 @@
 		    </li>
 		    <li>
 			    <button class="btn btn-default" ng-click="upload(gen.name, true)">上传全部</button>
+		    </li>
+		    <li>
+			    <button class="btn btn-default" ng-click="uploadAll()">上传项目</button>
 		    </li>
 	    </ul>
 	    <hr>
@@ -67,7 +75,7 @@
             <ul class="nav nav-tabs" role="tablist" style="">
                 <li role="presentation" class="{{$first ? 'active' : ''}}" style="" ng-repeat="template in templates">
                     <input type="checkbox" ng-model="template.upload" style="position:relative;left:3px;bottom:-30px;z-index:999">
-                    <a data-target="#template-{{template.id}}" role="tab" data-toggle="tab"> {{template.cap ? (gen.name | capitalize) : gen.name}}{{template.suffix}}</a>
+                    <a data-target="#template-{{template.id}}" role="tab" data-toggle="tab"> {{gen.fullName}}{{template.suffix}}</a>
                 </li>
             </ul>
         </div>

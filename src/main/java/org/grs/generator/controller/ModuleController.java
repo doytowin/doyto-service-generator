@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Module;
-import org.grs.generator.model.ModuleService;
+import org.grs.generator.service.ModuleService;
 import org.grs.generator.model.Project;
-import org.grs.generator.model.ProjectService;
+import org.grs.generator.service.ProjectService;
 
 /**
  * 模块管理模块基本操作。
@@ -100,7 +100,8 @@ public class ModuleController extends AbstractController<Module> {
             File file = new File(rootPath + File.separator + data.getString("path"));
             try {
                 FileUtils.write(file, data.getString("text"), StandardCharsets.UTF_8);
-                run.exec("git -c core.quotepath=false add -- " + data.getString("path"), null, dir);
+                Process  process = run.exec("git -c core.quotepath=false add -- " + file.getName(), null, file.getParentFile());
+                log.info("git add result: ", process.waitFor());
             } catch (IOException e) {
                 log.error("文件写入失败", e);
                 throw new RuntimeException("文件写入失败!", e);

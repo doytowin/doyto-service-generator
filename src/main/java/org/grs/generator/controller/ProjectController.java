@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.grs.generator.component.mybatis.IMapper;
 import org.grs.generator.model.Project;
-import org.grs.generator.model.ProjectService;
+import org.grs.generator.service.ProjectService;
 
 /**
  * 项目管理模块基本操作。
