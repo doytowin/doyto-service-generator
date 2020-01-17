@@ -1,193 +1,3 @@
-'use strict';
-
-/*global genApp, Crud, Util*/
-
-genApp.
-factory('Column', ['$resource',
-    function ($resource) {
-        return $resource('api/column/:id', {id: '@id'});
-    }]
-).
-controller('ColumnCtrl', ['$scope', 'Column',
-    function ($scope, Column) {
-        $scope.crud = new Crud(Column, function (data) {
-            if (data.success) {
-                $scope.crud.p.load();
-                $('.modal').modal('hide');
-            } else {
-                Util.handleFailure(data);
-            }
-        });
-    }]
-);
-'use strict';
-
-/*global genApp, Crud, Util*/
-
-genApp.
-factory('Module', ['$resource',
-    function ($resource) {
-        return $resource('api/module/:id', {id: '@id'}, {
-            upload: {url:'api/module/upload/:id', method: 'POST'},
-            table: {url:'api/table/:table', method: 'GET'},
-            template: {url:'api/template/', method: 'GET'}
-        });
-    }]
-).
-controller('ModuleCtrl', ['$scope','Project','Module','Column',
-    function ($scope, Project, Module, Column) {
-        $scope.crud = new Crud(Module, function (data) {
-            if (data.success) {
-                $scope.crud.p.load();
-                $('.modal').modal('hide');
-            } else {
-                Util.handleFailure(data);
-            }
-        });
-        Project.query(
-            function (data) {
-                if (data.success) {
-                    $scope.projects = data.result;
-                    if (localStorage.projectId) {
-                        for (var i = 0; i < $scope.projects.length; i++) {
-                            var p = $scope.projects[i];
-                            if (p.id == localStorage.projectId) {
-                                $scope.crud.project = p;
-                                $scope.crud.p.q.projectId = p.id;
-                                $scope.crud.p.load(true);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        );
-        $scope.sqlResolved = false;
-        $scope.resolveSql = function(record) {
-            if (/^create\s+table\s+(\w+)\s?/gi.test(record.createSql)) {
-
-                record.tableName = RegExp.$1;
-                var $1 = Util.camelize(RegExp.$1);
-                record.name = $1;
-                var $2 = Util.capitalize($1);
-                record.modelName = $2;
-                record.fullName = $2;
-                record.displayName = $2;
-
-                $scope.sqlResolved = true;
-            } else {
-                alert('sql格式错误!');
-            }
-        };
-
-        $scope.editLabels = function(record) {
-            Column.query({tableName:record.tableName, projectId:record.projectId}, function (data) {
-                if (data.success) {
-                    record.columns = data.result;
-                    $scope.crud.record = record;
-                } else {
-                    Util.handleFailure(data);
-                }
-            });
-        };
-
-        $scope.saveLabels = function(columns) {
-            Column.save(columns, function (data) {
-                if (data.success) {
-                    alert("更新成功");
-                    $('.modal').modal('hide');
-                } else {
-                    Util.handleFailure(data);
-                }
-            });
-        };
-    }]
-);
-
-
-'use strict';
-
-/*global genApp, Crud, Util*/
-
-genApp.
-factory('Project', ['$resource',
-    function ($resource) {
-        return $resource('api/project/:id', {id: '@id'});
-    }]
-).
-controller('ProjectCtrl', ['$scope', 'Project',
-    function ($scope, Project) {
-        $scope.crud = new Crud(Project, function (data) {
-            if (data.success) {
-                $scope.crud.p.load();
-                $('.modal').modal('hide');
-            } else {
-                Util.handleFailure(data);
-            }
-        });
-    }]
-);
-'use strict';
-
-/*global genApp, Crud, Util*/
-
-genApp.
-factory('Template', ['$resource',
-    function ($resource) {
-        return $resource('api/template/:id', {id: '@id'});
-    }]
-).
-controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
-    function ($scope, Project, Template, $window) {
-
-        $scope.crud = new Crud(Template, function (data) {
-            if (data.success) {
-                $scope.crud.p.load();
-                $('.modal').modal('hide');
-            } else {
-                $scope.errors = Util.handleFailure(data);
-            }
-        });
-
-        Project.query(
-            function (data) {
-                if (data.success) {
-                    $scope.projects = data.result;
-                    console.log($scope.projects);
-                    if (localStorage.projectId) {
-                        for (var i = 0; i < $scope.projects.length; i++) {
-                            var p = $scope.projects[i];
-                            if (p.id == localStorage.projectId) {
-                                $scope.crud.project = p;
-                                $scope.crud.p.q.projectId = p.id;
-                                $scope.crud.p.load(true);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        );
-
-        $scope.crud.add = function () {
-            this.record = {cap:true};
-        };
-
-        //从文件读取模板内容
-        $window.readContent = function (files) {
-            var file = files[0];
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                $scope.crud.record.content = e.target.result;
-                if (!$scope.crud.record.suffix) {
-                    $scope.crud.record.suffix = file.name.replace(/^_\./, '.');//去掉.号前面唯一的_
-                }
-                $scope.$apply();
-            };
-            reader.readAsText(file);
-        };
-    }]
-);
 "use strict";
 
 /* global Page */
@@ -248,7 +58,7 @@ var Crud = function (R, successFunc, errorFunc) {
             return;
         }
         loading = true;
-        R.save(record, onSuccess, onError);
+        record.id ? R.patch(record, onSuccess, onError) : R.save(record, onSuccess, onError);
     };
 
     this.remove = function (record, message) {
@@ -266,35 +76,37 @@ var Crud = function (R, successFunc, errorFunc) {
 /* exported Page */
 
 // 分页的处理类
+var FIRST_PAGE = 1;
 var Page = function (queryFunc) {
     var page = 0, limit = 10, pages = 0, total = 0, qo;
-    function SuccessCallback(data) {
-        if (data.success) {
-            if (typeof data.total === "number") {
-                total = data.total;
+    function SuccessCallback(json) {
+        if (json.success) {
+            if (typeof json.data.total === "number") {
+                total = json.data.total;
                 var newPages = Math.ceil(total / limit);
-                if (pages !== newPages) {
+
+              if (pages !== newPages) {
                     pages = newPages;
                     if (page > newPages) {// 当前页号page大于总页数时，是没有数据的，需要修正page然后重新加载
-                        page = Math.min(newPages, 1);
+                        page = Math.min(newPages, FIRST_PAGE);
                         this && this.load();
                         return;
                     }
                 }
                 if (!page && pages) {
-                    page = 1;
+                    page = FIRST_PAGE;
                 }
                 var p = this;
-                p.page = page;
-                p.limit = limit;
+                p.pageNumber = page;
+                p.pageSize = limit;
                 p.pages = pages;
                 p.total = total;
                 p.from = Math.max((page - 1) * limit + 1, 0);
                 p.to = Math.min(page * limit, total);
-                p.result = data.result;
+                p.data = json.data.list;
             }
         } else {
-            Util.handleFailure(data);
+            Util.handleFailure(json);
         }
     }
     this.q = {};
@@ -308,15 +120,15 @@ var Page = function (queryFunc) {
             // 则不执行不必要加载操作.
             return;
         }
-        q.page = page || 1;
-        q.limit = limit;
+        q.pageSize = limit;
+        q.pageNumber = (page || FIRST_PAGE) - 1;
         qo = angular.copy(q);
         queryFunc(q, angular.bind(this, SuccessCallback));
         return this;
     };
     this.first = function () {
-        if (page > 1) {
-            page = 1;
+        if (page > FIRST_PAGE) {
+            page = FIRST_PAGE;
             this.load();
         }
     };
@@ -327,7 +139,7 @@ var Page = function (queryFunc) {
         }
     };
     this.prev = function () {
-        if (page > 1) {
+        if (page > FIRST_PAGE) {
             page--;
             this.load();
         }
@@ -341,7 +153,7 @@ var Page = function (queryFunc) {
     this.size = function (size) { // 设置每页显示条数
         limit = size;
         page = Math.min(page, Math.ceil(total / limit));// 当前页数p不能大于总页数
-        page = Math.max(page, 1);
+        page = Math.max(page, FIRST_PAGE);
         this.load();
     };
     this.goto = function (goto) {
@@ -350,7 +162,7 @@ var Page = function (queryFunc) {
     };
     this.reset = function () {
         this.q = {};
-        page = 1;
+        page = FIRST_PAGE;
         this.load();
     };
 };
@@ -510,6 +322,8 @@ config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRo
 }]).
 config(['$resourceProvider', function ($resourceProvider) {
     $resourceProvider.defaults.actions.query.isArray = false;
+    $resourceProvider.defaults.actions.patch = {method: 'PATCH'};
+    $resourceProvider.defaults.actions.update = {method: 'PUT'};
 }]).
 // register the interceptor as a service
 factory('fastjsonInterceptor', [function () {
@@ -643,13 +457,13 @@ run(['$rootScope', function ($rootScope) {
 run(['$rootScope', '$http', function ($rootScope, $http) {
         $rootScope.loadMenu = function () {
             $http.get('api/menu/tree').success(function (data) {
-                $rootScope.menuTree = data.result;
+                $rootScope.menuTree = data.data;
             });
         };
         $rootScope.loadLoginUser = function () {
             $http.get('login-user').success(function (data) {
                 if (data.success) {
-                    $rootScope.loginUser = data.result;
+                    $rootScope.loginUser = data.data;
                     $rootScope.loadMenu();
                 } else {
                     location.href = 'login?redirect=' + encodeURIComponent(location.href);
@@ -658,18 +472,42 @@ run(['$rootScope', '$http', function ($rootScope, $http) {
         };
     }]
 );
+'use strict';
+
+/*global genApp, Crud, Util*/
+
+genApp.
+factory('Column', ['$resource',
+    function ($resource) {
+        return $resource('api/column/:id', {id: '@id'},{
+            batch: {url:'api/column/batch', method: 'POST'}
+        });
+    }]
+).
+controller('ColumnCtrl', ['$scope', 'Column',
+    function ($scope, Column) {
+        $scope.crud = new Crud(Column, function (data) {
+            if (data.success) {
+                $scope.crud.p.load();
+                $('.modal').modal('hide');
+            } else {
+                Util.handleFailure(data);
+            }
+        });
+    }]
+);
 "use strict";
 
 /*global genApp, angular, Util*/
 
 genApp.
-controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 'Template',
-    function ($scope, $timeout, $log, Project, Module, Template) {
+controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 'Template', 'Column',
+    function ($scope, $timeout, $log, Project, Module, Template, Column) {
         $scope.data = {};
         Project.query(
             function (data) {
                 if (data.success) {
-                    $scope.projects = data.result;
+                    $scope.projects = data.data;
 
                     var defaultProject = $scope.projects[0];
                     if (localStorage.projectId) {
@@ -708,7 +546,7 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                 },
                 function (data) {
                     if (data.success) {
-                        $scope.templates = data.result;
+                        $scope.templates = data.data;
                     }
                 }
             );
@@ -722,7 +560,7 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                     $scope.project = angular.copy(record);
                     $scope.projectName = record.name;
                     if (data.success) {
-                        $scope.modules = data.result;
+                        $scope.modules = data.data;
                         $scope.switchModule($scope.modules[0]);
                     }
                 }
@@ -744,18 +582,15 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                     }, 50)
                 }
             } else {
-                Module.table({
-                    table: record.tableName || record.name,
+                Column.query({
+                    tableName: record.tableName || record.name,
                     projectId: record.projectId
                 }, function (data) {
                     if (data.success) {
-                        var columns = data.result, imports = [];
+                        var columns = data.data, imports = [];
                         for (var i = 0; i < columns.length; i++) {
                             var column = columns[i];
-                            if (/^(var|text)/.test(column.type)) {
-                                column.type = 'String';
-                                column.jdbcType = 'VARCHAR';
-                            } else if (column.type.startsWith('int')) {
+                            if (column.type.startsWith('int')) {
                                 column.type = 'Integer';
                                 column.jdbcType = 'INTEGER';
                             } else if (column.type.startsWith('bigint')) {
@@ -764,7 +599,7 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                             } else if (column.type.startsWith('smallint')) {
                                 column.type = 'Short';
                                 column.jdbcType = 'INTEGER';
-                            } else if (column.type.startsWith('tinyint(1)') || column.type == 'bit(1)' ) {
+                            } else if (column.type.startsWith('tinyint(1)') || column.type === 'bit(1)' ) {
                                 column.type = 'Boolean';
                                 column.jdbcType = 'BIT';
                             } else if (column.type.startsWith('tinyint')) {
@@ -809,39 +644,6 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
         $scope.remove = function (gen) {
             Module.remove({id: gen.id}, onSuccess);
         };
-
-        function saveAs(path, content) {
-            var file = new File([content], path, {type: "text/plain;charset=utf-8"});
-            file.open("w"); // open file with write access
-            file.writeln('');
-            file.close();
-        }
-        function errorHandler(e) {
-            // var msg = '';
-            //
-            // switch (e.code) {
-            //     case FileError.QUOTA_EXCEEDED_ERR:
-            //         msg = 'QUOTA_EXCEEDED_ERR';
-            //         break;
-            //     case FileError.NOT_FOUND_ERR:
-            //         msg = 'NOT_FOUND_ERR';
-            //         break;
-            //     case FileError.SECURITY_ERR:
-            //         msg = 'SECURITY_ERR';
-            //         break;
-            //     case FileError.INVALID_MODIFICATION_ERR:
-            //         msg = 'INVALID_MODIFICATION_ERR';
-            //         break;
-            //     case FileError.INVALID_STATE_ERR:
-            //         msg = 'INVALID_STATE_ERR';
-            //         break;
-            //     default:
-            //         msg = 'Unknown Error';
-            //         break;
-            // };
-
-            console.log('Error: ' + e.message);
-        }
         $scope.upload = function (name, all) {
             var arr = [];
             var templates = $scope.templates;
@@ -901,6 +703,122 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
             $scope.switchModule($scope.modules[0], $scope.modules, 1);
         };
 
+    }]
+);
+'use strict';
+
+/*global genApp, Crud, Util*/
+
+genApp.
+factory('Module', ['$resource',
+    function ($resource) {
+        return $resource('api/module/:id', {id: '@id'}, {
+            upload: {url:'api/module/upload/:id', method: 'POST'},
+            import: {url:'api/import/module', method: 'POST'},
+            tableName: {url:'api/column/:table', method: 'GET'},
+            saveColumns: {url:'api/column/batch', method: 'POST'},
+            template: {url:'api/template/', method: 'GET'}
+        });
+    }]
+).
+controller('ModuleCtrl', ['$scope','Project','Module','Column',
+    function ($scope, Project, Module, Column) {
+        $scope.crud = new Crud(Module, function (data) {
+            if (data.success) {
+                $scope.crud.p.load();
+                $('.modal').modal('hide');
+            } else {
+                Util.handleFailure(data);
+            }
+        });
+        $scope.crud.import = Module.import;
+
+        Project.query(
+            function (json) {
+                if (json.success) {
+                    $scope.projects = {};
+                    var i;
+                    for ( i = 0; i < json.data.length; i++) {
+                        var project = json.data[i];
+                        $scope.projects[project.id] = project;
+                    }
+                    if (localStorage.projectId) {
+                        for (i = 0; i < $scope.projects.length; i++) {
+                            var p = $scope.projects[i];
+                            if (p.id === localStorage.projectId) {
+                                $scope.crud.project = p;
+                                $scope.crud.p.q.projectId = p.id;
+                                $scope.crud.p.load(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        );
+        $scope.sqlResolved = false;
+        $scope.resolveSql = function(record) {
+            if (/^create\s+table\s+(\w+)\s?/gi.test(record.createSql)) {
+
+                record.tableName = RegExp.$1;
+                var $1 = Util.camelize(RegExp.$1);
+                record.name = $1;
+                var $2 = Util.capitalize($1);
+                record.modelName = $2;
+                record.fullName = $2;
+                record.displayName = $2;
+
+                $scope.sqlResolved = true;
+            } else {
+                alert('sql格式错误!');
+            }
+        };
+
+        $scope.editLabels = function(record) {
+            Column.query({tableName:record.tableName, projectId:record.projectId}, function (data) {
+                if (data.success) {
+                    record.columns = data.data;
+                    $scope.crud.record = record;
+                } else {
+                    Util.handleFailure(data);
+                }
+            });
+        };
+
+        $scope.saveLabels = function(columns) {
+            Column.batch(columns, function (data) {
+                if (data.success) {
+                    $('.modal').modal('hide');
+                    alert("更新成功");
+                } else {
+                    Util.handleFailure(data);
+                }
+            });
+        };
+    }]
+);
+
+
+'use strict';
+
+/*global genApp, Crud, Util*/
+
+genApp.
+factory('Project', ['$resource',
+    function ($resource) {
+        return $resource('api/project/:id', {id: '@id'});
+    }]
+).
+controller('ProjectCtrl', ['$scope', 'Project',
+    function ($scope, Project) {
+        $scope.crud = new Crud(Project, function (data) {
+            if (data.success) {
+                $scope.crud.p.load();
+                $('.modal').modal('hide');
+            } else {
+                Util.handleFailure(data);
+            }
+        });
     }]
 );
 /*!
@@ -989,3 +907,68 @@ var restore$ref = function () {
         resolveObject(arguments[0]);
     };
 }();
+'use strict';
+
+/*global genApp, Crud, Util*/
+
+genApp.
+factory('Template', ['$resource',
+    function ($resource) {
+        return $resource('api/template/:id', {id: '@id'});
+    }]
+).
+controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
+    function ($scope, Project, Template, $window) {
+
+        $scope.crud = new Crud(Template, function (data) {
+            if (data.success) {
+                $scope.crud.p.load();
+                $('.modal').modal('hide');
+            } else {
+                $scope.errors = Util.handleFailure(data);
+            }
+        });
+
+        Project.query(
+            function (json) {
+                if (json.success) {
+                    $scope.projects = {};
+                    for (var i = 0; i < json.data.length; i++) {
+                        var project = json.data[i];
+                        $scope.projects[project.id] = project;
+                    }
+                    console.log($scope.projects);
+                    if (localStorage.projectId) {
+                        for (i = 0; i < $scope.projects.length; i++) {
+                            var p = $scope.projects[i];
+                            if (p.id === localStorage.projectId) {
+                                $scope.crud.project = p;
+                                $scope.crud.p.q.projectId = p.id;
+                                $scope.crud.p.load(true);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        $scope.crud.add = function () {
+            this.record = {cap:true};
+        };
+
+        //从文件读取模板内容
+        $window.readContent = function (files) {
+            var file = files[0];
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $scope.crud.record.content = e.target.data;
+                if (!$scope.crud.record.suffix) {
+                    $scope.crud.record.suffix = file.name.replace(/^_\./, '.');//去掉.号前面唯一的_
+                }
+                $scope.$apply();
+            };
+            reader.readAsText(file);
+        };
+    }]
+);

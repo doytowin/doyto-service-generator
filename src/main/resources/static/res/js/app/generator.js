@@ -3,13 +3,13 @@
 /*global genApp, angular, Util*/
 
 genApp.
-controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 'Template',
-    function ($scope, $timeout, $log, Project, Module, Template) {
+controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 'Template', 'Column',
+    function ($scope, $timeout, $log, Project, Module, Template, Column) {
         $scope.data = {};
         Project.query(
             function (data) {
                 if (data.success) {
-                    $scope.projects = data.result;
+                    $scope.projects = data.data;
 
                     var defaultProject = $scope.projects[0];
                     if (localStorage.projectId) {
@@ -48,7 +48,7 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                 },
                 function (data) {
                     if (data.success) {
-                        $scope.templates = data.result;
+                        $scope.templates = data.data;
                     }
                 }
             );
@@ -62,7 +62,7 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                     $scope.project = angular.copy(record);
                     $scope.projectName = record.name;
                     if (data.success) {
-                        $scope.modules = data.result;
+                        $scope.modules = data.data;
                         $scope.switchModule($scope.modules[0]);
                     }
                 }
@@ -84,18 +84,15 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                     }, 50)
                 }
             } else {
-                Module.table({
-                    table: record.tableName || record.name,
+                Column.query({
+                    tableName: record.tableName || record.name,
                     projectId: record.projectId
                 }, function (data) {
                     if (data.success) {
-                        var columns = data.result, imports = [];
+                        var columns = data.data, imports = [];
                         for (var i = 0; i < columns.length; i++) {
                             var column = columns[i];
-                            if (/^(var|text)/.test(column.type)) {
-                                column.type = 'String';
-                                column.jdbcType = 'VARCHAR';
-                            } else if (column.type.startsWith('int')) {
+                            if (column.type.startsWith('int')) {
                                 column.type = 'Integer';
                                 column.jdbcType = 'INTEGER';
                             } else if (column.type.startsWith('bigint')) {
@@ -104,7 +101,7 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                             } else if (column.type.startsWith('smallint')) {
                                 column.type = 'Short';
                                 column.jdbcType = 'INTEGER';
-                            } else if (column.type.startsWith('tinyint(1)') || column.type == 'bit(1)' ) {
+                            } else if (column.type.startsWith('tinyint(1)') || column.type === 'bit(1)' ) {
                                 column.type = 'Boolean';
                                 column.jdbcType = 'BIT';
                             } else if (column.type.startsWith('tinyint')) {
@@ -149,39 +146,6 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
         $scope.remove = function (gen) {
             Module.remove({id: gen.id}, onSuccess);
         };
-
-        function saveAs(path, content) {
-            var file = new File([content], path, {type: "text/plain;charset=utf-8"});
-            file.open("w"); // open file with write access
-            file.writeln('');
-            file.close();
-        }
-        function errorHandler(e) {
-            // var msg = '';
-            //
-            // switch (e.code) {
-            //     case FileError.QUOTA_EXCEEDED_ERR:
-            //         msg = 'QUOTA_EXCEEDED_ERR';
-            //         break;
-            //     case FileError.NOT_FOUND_ERR:
-            //         msg = 'NOT_FOUND_ERR';
-            //         break;
-            //     case FileError.SECURITY_ERR:
-            //         msg = 'SECURITY_ERR';
-            //         break;
-            //     case FileError.INVALID_MODIFICATION_ERR:
-            //         msg = 'INVALID_MODIFICATION_ERR';
-            //         break;
-            //     case FileError.INVALID_STATE_ERR:
-            //         msg = 'INVALID_STATE_ERR';
-            //         break;
-            //     default:
-            //         msg = 'Unknown Error';
-            //         break;
-            // };
-
-            console.log('Error: ' + e.message);
-        }
         $scope.upload = function (name, all) {
             var arr = [];
             var templates = $scope.templates;

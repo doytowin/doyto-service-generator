@@ -5,7 +5,9 @@
 genApp.
 factory('Column', ['$resource',
     function ($resource) {
-        return $resource('api/column/:id', {id: '@id'});
+        return $resource('api/column/:id', {id: '@id'},{
+            batch: {url:'api/column/batch', method: 'POST'}
+        });
     }]
 ).
 controller('ColumnCtrl', ['$scope', 'Column',

@@ -22,9 +22,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <start-class>org.grs.generator.GeneratorWebApplication</start-class>
-
-        <main.basedir>${basedir}/../..</main.basedir>
+        <start-class>win.doyto.service.GeneratorWebApplication</start-class>
 
         <docker.plugin.version>1.1.1</docker.plugin.version>
         <docker.image.prefix>docker.doyto.win</docker.image.prefix>
@@ -32,14 +30,13 @@
         <docker.image.push>false</docker.image.push>
         <docker.expose>0</docker.expose>
 
-        <spring-boot.version>1.5.13.RELEASE</spring-boot.version>
+        <spring-boot.version>2.1.9.RELEASE</spring-boot.version>
         <spring-loaded.version>1.2.8.RELEASE</spring-loaded.version>
 
-        <mysql.version>8.0.12</mysql.version>
-        <hikaricp.version>2.4.7</hikaricp.version>
-        <hazelcast.version>3.8.4</hazelcast.version>
+        <mysql.version>5.1.46</mysql.version>
+        <hikaricp.version>3.2.0</hikaricp.version>
         <angular.version>1.5.7</angular.version>
-        <lombok.version>1.16.10</lombok.version>
+        <lombok.version>1.18.8</lombok.version>
     </properties>
     <dependencies>
         <dependency>
@@ -124,17 +121,16 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>4.2.7.RELEASE</version>
+            <version>5.1.9.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.22</version>
+            <version>1.2.62</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -142,9 +138,9 @@
             <version>2.5</version>
         </dependency>
         <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.4.5</version>
+            <groupId>win.doyto</groupId>
+            <artifactId>doyto-query</artifactId>
+            <version>0.1.8-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -152,12 +148,6 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
             <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>1.2.0</version>
         </dependency>
 
         <dependency>
@@ -171,28 +161,10 @@
             <artifactId>jstl</artifactId>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.mybatis.caches</groupId>
-            <artifactId>mybatis-hazelcast</artifactId>
-            <version>1.1.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.hazelcast</groupId>
-                    <artifactId>hazelcast-spring</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
-
-        <!-- hazelcast-spring -->
-        <!--<dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast-spring</artifactId>
-        </dependency>-->
-
-        <!-- 数据库连接池 -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
+            <version>3.2.0</version>
         </dependency>
 
         <dependency>

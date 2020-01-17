@@ -55,6 +55,8 @@ config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRo
 }]).
 config(['$resourceProvider', function ($resourceProvider) {
     $resourceProvider.defaults.actions.query.isArray = false;
+    $resourceProvider.defaults.actions.patch = {method: 'PATCH'};
+    $resourceProvider.defaults.actions.update = {method: 'PUT'};
 }]).
 // register the interceptor as a service
 factory('fastjsonInterceptor', [function () {

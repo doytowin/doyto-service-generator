@@ -7,7 +7,9 @@ factory('Module', ['$resource',
     function ($resource) {
         return $resource('api/module/:id', {id: '@id'}, {
             upload: {url:'api/module/upload/:id', method: 'POST'},
-            table: {url:'api/table/:table', method: 'GET'},
+            import: {url:'api/import/module', method: 'POST'},
+            tableName: {url:'api/column/:table', method: 'GET'},
+            saveColumns: {url:'api/column/batch', method: 'POST'},
             template: {url:'api/template/', method: 'GET'}
         });
     }]
@@ -22,20 +24,21 @@ controller('ModuleCtrl', ['$scope','Project','Module','Column',
                 Util.handleFailure(data);
             }
         });
+        $scope.crud.import = Module.import;
+
         Project.query(
-            function (data) {
-                if (data.success) {
-                    $scope.projects = data.result;
+            function (json) {
+                if (json.success) {
+                    $scope.projects = {};
+                    for (var i = 0; i < json.data.length; i++) {
+                        var project = json.data[i];
+                        $scope.projects[project.id] = project;
+                    }
                     if (localStorage.projectId) {
-                        for (var i = 0; i < $scope.projects.length; i++) {
-                            var p = $scope.projects[i];
-                            if (p.id == localStorage.projectId) {
-                                $scope.crud.project = p;
-                                $scope.crud.p.q.projectId = p.id;
-                                $scope.crud.p.load(true);
-                                break;
-                            }
-                        }
+                        var p = $scope.projects[localStorage.projectId];
+                        $scope.crud.project = p;
+                        $scope.crud.p.q.projectId = p.id;
+                        $scope.crud.p.load(true);
                     }
                 }
             }
@@ -61,7 +64,7 @@ controller('ModuleCtrl', ['$scope','Project','Module','Column',
         $scope.editLabels = function(record) {
             Column.query({tableName:record.tableName, projectId:record.projectId}, function (data) {
                 if (data.success) {
-                    record.columns = data.result;
+                    record.columns = data.data;
                     $scope.crud.record = record;
                 } else {
                     Util.handleFailure(data);
@@ -70,10 +73,10 @@ controller('ModuleCtrl', ['$scope','Project','Module','Column',
         };
 
         $scope.saveLabels = function(columns) {
-            Column.save(columns, function (data) {
+            Column.batch(columns, function (data) {
                 if (data.success) {
-                    alert("更新成功");
                     $('.modal').modal('hide');
+                    alert("更新成功");
                 } else {
                     Util.handleFailure(data);
                 }

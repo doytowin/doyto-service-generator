@@ -30,10 +30,10 @@
 			</tr>
 			</thead>
 			<tbody>
-			<tr ng-repeat="r in crud.p.result">
+			<tr ng-repeat="r in crud.p.data">
 				<td>{{$index+1}}</td>
-				<td>{{r.project.name}}</td>
-				<td>{{r.project.path + r.path + (r.cap ? ('YourModule') : 'yourModule') + r.suffix}}</td>
+				<td>{{projects[r.projectId].name}}</td>
+				<td>{{projects[r.projectId].path + r.path + (r.cap ? ('YourModule') : 'yourModule') + r.suffix}}</td>
 				<td><label><input type="checkbox" ng-init="false" ng-model="r.valid" ng-change="crud.save(r)"></label>
 				</td>
 				<td>
@@ -52,7 +52,7 @@
 				<button class="btn btn-default" ng-click="crud.p.prev();"><i class="fa fa-backward"></i></button>
 				<div class="btn-group">
 					<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-						{{crud.p.page}} / {{crud.p.pages}} <span class="caret"></span>
+						{{crud.p.pageNumber}} / {{crud.p.pages}} <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu dropdown-menu-sm">
 						<li ng-repeat="_ in ((_ = []) && (_.length=(crud.p.pages||0)) && _) track by $index">
@@ -68,7 +68,7 @@
 				<span class="hidden-xs">共有{{crud.p.total}}条数据，显示第{{crud.p.from}}条到第{{crud.p.to}}条，每页</span>
 				<div class="btn-group">
 					<button class="btn btn-default dropdown-toggle" style="min-width:55px" data-toggle="dropdown">
-						{{crud.p.limit}} <span class="caret"></span>
+						{{crud.p.pageSize}} <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu pull-right">
 						<li ng-repeat="s in [1, 5,10,20,30,50]" style="min-width:55px"><a ng-click="crud.p.size(s)">{{s}}</a></li>
@@ -146,7 +146,7 @@
 						<div class="form-group">
 							<label class="control-label col-xs-3 col-sm-4">所属项目</label>
 							<div class="col-xs-9 col-sm-5">
-								<p class="form-control-static">{{crud.record.project.name}}</p>
+								<p class="form-control-static">{{projects[crud.record.projectId].name}}</p>
 							</div>
 						</div>
 						<div class="form-group">
@@ -205,13 +205,13 @@
 						<div class="form-group">
 							<label class="control-label col-xs-3 col-sm-4">项目名称</label>
 							<div class="col-xs-9 col-sm-5">
-								<div class="form-control">{{crud.record.project.name}}</div>
+								<div class="form-control">{{projects[crud.record.projectId].name}}</div>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="control-label col-xs-3 col-sm-4">项目目录</label>
 							<div class="col-xs-9 col-sm-5">
-								<div class="form-control">{{crud.record.project.path}}</div>
+								<div class="form-control">{{projects[crud.record.projectId].path}}</div>
 							</div>
 						</div>
 						<div class="form-group">

@@ -21,20 +21,18 @@ controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
         });
 
         Project.query(
-            function (data) {
-                if (data.success) {
-                    $scope.projects = data.result;
-                    console.log($scope.projects);
+            function (json) {
+                if (json.success) {
+                    $scope.projects = {};
+                    for (var i = 0; i < json.data.length; i++) {
+                        var project = json.data[i];
+                        $scope.projects[project.id] = project;
+                    }
                     if (localStorage.projectId) {
-                        for (var i = 0; i < $scope.projects.length; i++) {
-                            var p = $scope.projects[i];
-                            if (p.id == localStorage.projectId) {
-                                $scope.crud.project = p;
-                                $scope.crud.p.q.projectId = p.id;
-                                $scope.crud.p.load(true);
-                                break;
-                            }
-                        }
+                        var p = $scope.projects[localStorage.projectId];
+                        $scope.crud.project = p;
+                        $scope.crud.p.q.projectId = p.id;
+                        $scope.crud.p.load(true);
                     }
                 }
             }
@@ -49,7 +47,7 @@ controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
             var file = files[0];
             var reader = new FileReader();
             reader.onload = function (e) {
-                $scope.crud.record.content = e.target.result;
+                $scope.crud.record.content = e.target.data;
                 if (!$scope.crud.record.suffix) {
                     $scope.crud.record.suffix = file.name.replace(/^_\./, '.');//去掉.号前面唯一的_
                 }

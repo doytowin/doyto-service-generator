@@ -58,7 +58,7 @@ var Crud = function (R, successFunc, errorFunc) {
             return;
         }
         loading = true;
-        R.save(record, onSuccess, onError);
+        record.id ? R.patch(record, onSuccess, onError) : R.save(record, onSuccess, onError);
     };
 
     this.remove = function (record, message) {
