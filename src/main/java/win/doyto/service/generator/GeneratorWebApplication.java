@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package win.doyto.service;
+package win.doyto.service.generator;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import win.doyto.query.web.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
-public class GeneratorWebApplication {
+public class GeneratorWebApplication extends WebMvcConfigurerAdapter {
     public static void main(String[] args) {
         SpringApplication.run(GeneratorWebApplication.class, args);
     }

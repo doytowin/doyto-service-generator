@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>win.doyto</groupId>
-    <artifactId>generator</artifactId>
+    <artifactId>doyto-service-generator</artifactId>
     <name>generator</name>
     <description>代码自动生成工具</description>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <url>https://generator.doyto.win/</url>
     <organization>
         <name>Doyto Network, Inc.</name>
@@ -22,7 +22,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <start-class>win.doyto.service.GeneratorWebApplication</start-class>
+        <start-class>win.doyto.service.generator.GeneratorWebApplication</start-class>
 
         <docker.plugin.version>1.1.1</docker.plugin.version>
         <docker.image.prefix>docker.doyto.win</docker.image.prefix>
@@ -34,7 +34,6 @@
         <spring-loaded.version>1.2.8.RELEASE</spring-loaded.version>
 
         <mysql.version>5.1.46</mysql.version>
-        <hikaricp.version>3.2.0</hikaricp.version>
         <angular.version>1.5.7</angular.version>
         <lombok.version>1.18.8</lombok.version>
     </properties>
@@ -51,30 +50,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <!--<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jdbc</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.tomcat</groupId>
-                    <artifactId>tomcat-jdbc</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
         </dependency>
 
         <dependency>
@@ -139,8 +114,8 @@
         </dependency>
         <dependency>
             <groupId>win.doyto</groupId>
-            <artifactId>doyto-query</artifactId>
-            <version>0.1.8-SNAPSHOT</version>
+            <artifactId>doyto-query-web</artifactId>
+            <version>0.2.0-RELEASE</version>
         </dependency>
 
         <dependency>
@@ -164,7 +139,6 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.2.0</version>
         </dependency>
 
         <dependency>
@@ -204,23 +178,12 @@
                     <execution>
                         <goals>
                             <goal>repackage</goal>
+                            <goal>build-info</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
                     <mainClass>${start-class}</mainClass>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <warName>generator##${project.version}</warName>
-                    <packagingExcludes>
-                        %regex[WEB-INF/lib/spring-boot-starter-tomcat.*.jar],
-                        WEB-INF/lib/tomcat-*.jar
-                    </packagingExcludes>
                 </configuration>
             </plugin>
             <plugin>

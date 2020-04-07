@@ -1,4 +1,4 @@
-package win.doyto.service.generator.module;
+package win.doyto.service.generator.module.common;
 
 import com.zaxxer.hikari.util.DriverDataSource;
 import lombok.AllArgsConstructor;
@@ -63,7 +63,7 @@ public class ImportController {
         // 1.建立数据库连接
         // 2.SHOW TABLES;
         // 3.SHOW CREATE TABLE xxx;
-        ProjectEntity projectEntity = projectApi.get(projectId);
+        ProjectEntity projectEntity = projectApi.getById(projectId);
 
         if (DbUtils.loadDriver(projectEntity.getJdbcDriver())) {
             try {
@@ -119,7 +119,7 @@ public class ImportController {
     }
 
     private void importModule(Integer projectId, String tableName, String createSql) {
-        importModule(projectApi.get(projectId), tableName, createSql);
+        importModule(projectApi.getById(projectId), tableName, createSql);
     }
 
     private void importModule(ProjectEntity projectEntity, String tableName, String createSql) {
@@ -144,7 +144,7 @@ public class ImportController {
                 moduleRequest.setDisplayName(capitalizeName);
                 moduleRequest.setModelName(capitalizeName);
                 moduleRequest.setFullName(capitalizeName);
-                moduleApi.create(moduleRequest);
+                moduleApi.add(moduleRequest);
             }
 
             //添加模块后导出表的数据库结构
@@ -156,7 +156,7 @@ public class ImportController {
                 columnEntity.setLabel(columnEntity.getField());
                 columnEntity.setProjectId(projectId);
             }
-            columnApi.batchInsert(list);
+            columnApi.add(list);
 
         } catch (Exception e) {
             throw new RuntimeException("建表出错!", e);

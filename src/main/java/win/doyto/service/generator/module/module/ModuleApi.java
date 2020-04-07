@@ -1,6 +1,7 @@
 package win.doyto.service.generator.module.module;
 
-import win.doyto.query.controller.RestApi;
+
+import win.doyto.query.web.controller.RestApi;
 
 /**
  * ModuleApi

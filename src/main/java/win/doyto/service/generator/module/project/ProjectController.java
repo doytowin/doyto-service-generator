@@ -3,7 +3,7 @@ package win.doyto.service.generator.module.project;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import win.doyto.query.controller.AbstractSimpleController;
+import win.doyto.query.web.controller.AbstractIQEEController;
 
 /**
  * 项目管理模块基本操作。
@@ -13,6 +13,6 @@ import win.doyto.query.controller.AbstractSimpleController;
 @Slf4j
 @RestController
 @RequestMapping("/api/project")
-public class ProjectController extends AbstractSimpleController<ProjectEntity, Integer, ProjectQuery> implements ProjectApi {
+public class ProjectController extends AbstractIQEEController<ProjectEntity, Integer, ProjectQuery> implements ProjectApi {
 
 }

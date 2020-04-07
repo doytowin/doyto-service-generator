@@ -8,7 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
-import win.doyto.query.controller.AbstractRestController;
+import win.doyto.query.web.controller.AbstractIQRSController;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/api/module")
 public class ModuleController
-        extends AbstractRestController<ModuleEntity, Integer, ModuleQuery, ModuleRequest, ModuleResponse>
+        extends AbstractIQRSController<ModuleEntity, Integer, ModuleQuery, ModuleRequest, ModuleResponse>
         implements ModuleApi {
 
     @Getter
