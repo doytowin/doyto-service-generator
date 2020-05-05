@@ -1,7 +1,7 @@
 package win.doyto.service.generator.module.column;
 
-import win.doyto.query.web.controller.RestApi;
+import win.doyto.query.service.CrudService;
 
-public interface ColumnApi extends RestApi<Integer, ColumnQuery, ColumnEntity, ColumnEntity> {
+public interface ColumnApi extends CrudService<ColumnEntity, Integer, ColumnQuery> {
     int delete(ColumnQuery query);
 }

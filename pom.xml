@@ -6,7 +6,7 @@
     <artifactId>doyto-service-generator</artifactId>
     <name>generator</name>
     <description>代码自动生成工具</description>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <url>https://generator.doyto.win/</url>
     <organization>
         <name>Doyto Network, Inc.</name>
@@ -115,7 +115,7 @@
         <dependency>
             <groupId>win.doyto</groupId>
             <artifactId>doyto-query-web</artifactId>
-            <version>0.2.0-RELEASE</version>
+            <version>0.2.1-RELEASE</version>
         </dependency>
 
         <dependency>

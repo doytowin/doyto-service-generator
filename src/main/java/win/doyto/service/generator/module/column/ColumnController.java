@@ -20,9 +20,8 @@ import javax.validation.Valid;
 @RequestMapping("/api/column")
 public class ColumnController extends AbstractIQEEController<ColumnEntity, Integer, ColumnQuery> implements ColumnApi {
 
-    @Override
     @PostMapping("batch")
-    public void add(@RequestBody @Valid List<ColumnEntity> columnEntities) {
-        batchInsert(columnEntities, "label");
+    public void batch(@RequestBody @Valid List<ColumnEntity> columnEntities) {
+        create(columnEntities, "label");
     }
 }

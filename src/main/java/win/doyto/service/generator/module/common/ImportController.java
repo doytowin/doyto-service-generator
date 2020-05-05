@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import win.doyto.query.web.response.ErrorCode;
+import win.doyto.query.web.response.ErrorCodeException;
 import win.doyto.service.generator.module.column.ColumnApi;
 import win.doyto.service.generator.module.column.ColumnEntity;
 import win.doyto.service.generator.module.module.ModuleApi;
+import win.doyto.service.generator.module.module.ModuleEntity;
 import win.doyto.service.generator.module.module.ModuleQuery;
 import win.doyto.service.generator.module.module.ModuleRequest;
-import win.doyto.service.generator.module.module.ModuleResponse;
 import win.doyto.service.generator.module.project.ProjectApi;
 import win.doyto.service.generator.module.project.ProjectEntity;
 
@@ -59,11 +61,12 @@ public class ImportController {
 
     @PostMapping("project")
     @Transactional
+    @SuppressWarnings("java:S125")
     public void importDatabase(Integer projectId) {
         // 1.建立数据库连接
         // 2.SHOW TABLES;
         // 3.SHOW CREATE TABLE xxx;
-        ProjectEntity projectEntity = projectApi.getById(projectId);
+        ProjectEntity projectEntity = projectApi.get(projectId);
 
         if (DbUtils.loadDriver(projectEntity.getJdbcDriver())) {
             try {
@@ -119,7 +122,7 @@ public class ImportController {
     }
 
     private void importModule(Integer projectId, String tableName, String createSql) {
-        importModule(projectApi.getById(projectId), tableName, createSql);
+        importModule(projectApi.get(projectId), tableName, createSql);
     }
 
     private void importModule(ProjectEntity projectEntity, String tableName, String createSql) {
@@ -130,21 +133,21 @@ public class ImportController {
             testTable(tableName, createSql, queryRunner);
 
             Integer projectId = projectEntity.getId();
-            List<ModuleResponse> moduleEntityList = moduleApi.list(ModuleQuery.builder().projectId(projectId).tableName(tableName).build());
+            List<ModuleEntity> moduleEntityList = moduleApi.query(ModuleQuery.builder().projectId(projectId).tableName(tableName).build());
 
-            ModuleRequest moduleRequest;
+            ModuleEntity moduleEntity;
             if (!moduleEntityList.isEmpty()) {
                 log.warn("Model已存在: projectId={}, tableName={}", projectId, tableName);
             } else {
-                moduleRequest = new ModuleRequest();
-                moduleRequest.setProjectId(projectId);
-                moduleRequest.setTableName(tableName);
-                moduleRequest.setName(camelize(StringUtils.removeStart(tableName, projectEntity.getTablePrefix())));
-                String capitalizeName = StringUtils.capitalize(moduleRequest.getName());
-                moduleRequest.setDisplayName(capitalizeName);
-                moduleRequest.setModelName(capitalizeName);
-                moduleRequest.setFullName(capitalizeName);
-                moduleApi.add(moduleRequest);
+                moduleEntity = new ModuleEntity();
+                moduleEntity.setProjectId(projectId);
+                moduleEntity.setTableName(tableName);
+                moduleEntity.setName(camelize(StringUtils.removeStart(tableName, projectEntity.getTablePrefix())));
+                String capitalizeName = StringUtils.capitalize(moduleEntity.getName());
+                moduleEntity.setDisplayName(capitalizeName);
+                moduleEntity.setModelName(capitalizeName);
+                moduleEntity.setFullName(capitalizeName);
+                moduleApi.create(moduleEntity);
             }
 
             //添加模块后导出表的数据库结构
@@ -156,10 +159,11 @@ public class ImportController {
                 columnEntity.setLabel(columnEntity.getField());
                 columnEntity.setProjectId(projectId);
             }
-            columnApi.add(list);
+            columnApi.create(list);
 
         } catch (Exception e) {
-            throw new RuntimeException("建表出错!", e);
+            log.error("建表出错!", e);
+            throw new ErrorCodeException(ErrorCode.build("建表出错:" + e.getMessage()));
         } finally {
             if (dataSource != null) {
                 try {
