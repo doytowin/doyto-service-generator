@@ -1,13 +1,13 @@
 package win.doyto.service.generator.module.module;
 
-import win.doyto.query.entity.CommonEntity;
+import win.doyto.query.entity.AbstractCommonEntity;
 
-import javax.persistence.Table;
+import javax.persistence.Entity;
 
 @lombok.Getter
 @lombok.Setter
-@Table(name = "gen_module")
-public class ModuleEntity extends CommonEntity<Integer, Integer> {
+@Entity(name = "gen_module")
+public class ModuleEntity extends AbstractCommonEntity<Integer, Integer> {
 
     private Integer projectId;
 

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import win.doyto.query.web.controller.AbstractIQEEController;
+import win.doyto.query.web.controller.AbstractEIQController;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -18,10 +18,15 @@ import javax.validation.Valid;
 @Slf4j
 @RestController
 @RequestMapping("/api/column")
-public class ColumnController extends AbstractIQEEController<ColumnEntity, Integer, ColumnQuery> implements ColumnApi {
+public class ColumnController extends AbstractEIQController<ColumnEntity, Integer, ColumnQuery> implements ColumnApi {
 
     @PostMapping("batch")
     public void batch(@RequestBody @Valid List<ColumnEntity> columnEntities) {
-        create(columnEntities, "label");
+        service.create(columnEntities, "label");
+    }
+
+    @Override
+    public int delete(ColumnQuery query) {
+        return service.delete(query);
     }
 }

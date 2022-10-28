@@ -9,13 +9,13 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
         Project.query(
             function (data) {
                 if (data.success) {
-                    $scope.projects = data.data;
+                    $scope.projects = data.data.list;
 
                     var defaultProject = $scope.projects[0];
                     if (localStorage.projectId) {
                         for (var i = 0; i < $scope.projects.length; i++) {
                             var project = $scope.projects[i];
-                            if (project.id == localStorage.projectId) {
+                            if (project.id === localStorage.projectId) {
                                 defaultProject = project;
                                 break;
                             }
@@ -48,7 +48,7 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                 },
                 function (data) {
                     if (data.success) {
-                        $scope.templates = data.data;
+                        $scope.templates = data.data.list;
                     }
                 }
             );
@@ -62,7 +62,7 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                     $scope.project = angular.copy(record);
                     $scope.projectName = record.name;
                     if (data.success) {
-                        $scope.modules = data.data;
+                        $scope.modules = data.data.list;
                         $scope.switchModule($scope.modules[0]);
                     }
                 }
@@ -89,7 +89,7 @@ controller('GeneratorCtrl', ['$scope', '$timeout', '$log', 'Project', 'Module', 
                     projectId: record.projectId
                 }, function (data) {
                     if (data.success) {
-                        var columns = data.data, imports = [];
+                        var columns = data.data.list, imports = [];
                         for (var i = 0; i < columns.length; i++) {
                             var column = columns[i];
                             if (column.type.startsWith('int')) {

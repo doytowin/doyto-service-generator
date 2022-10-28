@@ -1,14 +1,14 @@
 package win.doyto.service.generator.module.template;
 
-import win.doyto.query.entity.CommonEntity;
+import win.doyto.query.entity.AbstractCommonEntity;
 
-import javax.persistence.Table;
+import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
 @lombok.Getter
 @lombok.Setter
-@Table(name = "gen_template")
-public class TemplateEntity extends CommonEntity<Integer, Integer> {
+@Entity(name = "gen_template")
+public class TemplateEntity extends AbstractCommonEntity<Integer, Integer> {
 
     @NotNull
     private Integer projectId;
