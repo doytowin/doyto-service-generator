@@ -16,22 +16,25 @@ factory('Module', ['$resource',
 ).
 controller('ModuleCtrl', ['$scope','Project','Module','Column',
     function ($scope, Project, Module, Column) {
-        $scope.crud = new Crud(Module, function (data) {
-            if (data.success) {
-                $scope.crud.p.load();
-                $('.modal').modal('hide');
-            } else {
-                Util.handleFailure(data);
-            }
-        });
-        $scope.crud.import = Module.import;
+      let succFunc = function (data) {
+        if (data.success) {
+          $scope.crud.p.load();
+          $('.modal').modal('hide');
+        } else {
+          Util.handleFailure(data);
+        }
+      };
+        $scope.crud = new Crud(Module, succFunc);
+        $scope.crud.import = function (record) {
+          Module.import(record, succFunc);
+        };
 
         Project.query(
             function (json) {
                 if (json.success) {
                     $scope.projects = {};
-                    for (var i = 0; i < json.data.length; i++) {
-                        var project = json.data[i];
+                    for (var i = 0; i < json.data.list.length; i++) {
+                        var project = json.data.list[i];
                         $scope.projects[project.id] = project;
                     }
                     if (localStorage.projectId) {

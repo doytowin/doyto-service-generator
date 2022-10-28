@@ -24,8 +24,8 @@ controller('TemplateCtrl', ['$scope', 'Project', 'Template', '$window',
             function (json) {
                 if (json.success) {
                     $scope.projects = {};
-                    for (var i = 0; i < json.data.length; i++) {
-                        var project = json.data[i];
+                    for (var i = 0; i < json.data.list.length; i++) {
+                        var project = json.data.list[i];
                         $scope.projects[project.id] = project;
                     }
                     if (localStorage.projectId) {

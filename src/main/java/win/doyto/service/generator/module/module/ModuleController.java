@@ -8,7 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
-import win.doyto.query.web.controller.AbstractIQRSController;
+import win.doyto.query.web.controller.AbstractRestController;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/api/module")
 public class ModuleController
-        extends AbstractIQRSController<ModuleEntity, Integer, ModuleQuery, ModuleRequest, ModuleResponse>
+        extends AbstractRestController<ModuleEntity, Integer, ModuleQuery, ModuleRequest, ModuleResponse>
         implements ModuleApi {
 
     @Getter
@@ -46,7 +46,7 @@ public class ModuleController
         return moduleEntity;
     }
 
-    @RequestMapping(value = "upload/{id}", method = RequestMethod.POST)
+    @PostMapping("upload/{id}")
     public void upload(@PathVariable("id") String id, @RequestBody JSONObject json) {
 
         String rootPath = json.getString("root");

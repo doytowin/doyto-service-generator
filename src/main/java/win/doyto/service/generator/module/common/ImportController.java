@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import win.doyto.query.web.response.ErrorCode;
 import win.doyto.query.web.response.ErrorCodeException;
+import win.doyto.query.web.response.JsonBody;
 import win.doyto.service.generator.module.column.ColumnApi;
 import win.doyto.service.generator.module.column.ColumnEntity;
 import win.doyto.service.generator.module.module.ModuleApi;
-import win.doyto.service.generator.module.module.ModuleEntity;
 import win.doyto.service.generator.module.module.ModuleQuery;
 import win.doyto.service.generator.module.module.ModuleRequest;
+import win.doyto.service.generator.module.module.ModuleResponse;
 import win.doyto.service.generator.module.project.ProjectApi;
 import win.doyto.service.generator.module.project.ProjectEntity;
 
@@ -39,6 +40,7 @@ import javax.sql.DataSource;
  * @author f0rb on 2017-01-21.
  */
 @Slf4j
+@JsonBody
 @RestController
 @RequestMapping("/api/import")
 @AllArgsConstructor
@@ -133,21 +135,21 @@ public class ImportController {
             testTable(tableName, createSql, queryRunner);
 
             Integer projectId = projectEntity.getId();
-            List<ModuleEntity> moduleEntityList = moduleApi.query(ModuleQuery.builder().projectId(projectId).tableName(tableName).build());
+            List<ModuleResponse> moduleEntityList = moduleApi.query(ModuleQuery.builder().projectId(projectId).tableName(tableName).build());
 
-            ModuleEntity moduleEntity;
             if (!moduleEntityList.isEmpty()) {
                 log.warn("Model已存在: projectId={}, tableName={}", projectId, tableName);
             } else {
-                moduleEntity = new ModuleEntity();
-                moduleEntity.setProjectId(projectId);
-                moduleEntity.setTableName(tableName);
-                moduleEntity.setName(camelize(StringUtils.removeStart(tableName, projectEntity.getTablePrefix())));
-                String capitalizeName = StringUtils.capitalize(moduleEntity.getName());
-                moduleEntity.setDisplayName(capitalizeName);
-                moduleEntity.setModelName(capitalizeName);
-                moduleEntity.setFullName(capitalizeName);
-                moduleApi.create(moduleEntity);
+                ModuleRequest moduleRequest = new ModuleRequest();
+                moduleRequest.setProjectId(projectId);
+                moduleRequest.setCreateSql(createSql);
+                moduleRequest.setTableName(tableName);
+                moduleRequest.setName(camelize(StringUtils.removeStart(tableName, projectEntity.getTablePrefix())));
+                String capitalizeName = StringUtils.capitalize(moduleRequest.getName());
+                moduleRequest.setDisplayName(capitalizeName);
+                moduleRequest.setModelName(capitalizeName);
+                moduleRequest.setFullName(capitalizeName);
+                moduleApi.create(moduleRequest);
             }
 
             //添加模块后导出表的数据库结构

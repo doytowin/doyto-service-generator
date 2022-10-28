@@ -15,7 +15,7 @@ spring:
   application:
     name: generator
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     url: "jdbc:mysql://${jdbc.host:localhost}:${jdbc.port:3306}/generator\
       ?autoReconnect=true&useUnicode=true&characterEncoding=utf-8\
@@ -31,3 +31,7 @@ spring:
       html-application-cache: false
       cache: false
 
+doyto:
+  query:
+    config:
+      map-camel-case-to-underscore: false
